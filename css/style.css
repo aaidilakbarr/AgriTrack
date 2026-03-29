@@ -1,0 +1,90 @@
+/* CSS Tambahan untuk kustomisasi yang tidak ter-cover Tailwind secara default */
+
+/* Menyembunyikan scrollbar untuk tampilan mobile yang lebih rapi */
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent; 
+}
+
+body {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Glassmorphism Classes (opsional jika butuh efek kaca custom) */
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.dark .glass {
+    background: rgba(30, 41, 59, 0.7);
+}
+
+/* Modal animations */
+.modal-enter {
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-exit {
+    animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+
+/* Sidebar Toggle Styles for Desktop */
+@media (min-width: 768px) {
+  body[data-sidebar="collapsed"] {
+    padding-left: 5rem !important; /* pl-20 */
+  }
+  body[data-sidebar="collapsed"] #sidebar {
+    width: 5rem !important; /* w-20 */
+    align-items: center !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+  body[data-sidebar="collapsed"] #logoDesktop {
+    display: none !important;
+  }
+  body[data-sidebar="collapsed"] #logoMobile {
+    display: flex !important;
+  }
+  body[data-sidebar="collapsed"] .sidebar-link {
+    flex-direction: column !important;
+    justify-content: center !important;
+    gap: 0.25rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+  body[data-sidebar="collapsed"] .sidebar-link span {
+    font-size: 10px !important;
+    line-height: 1 !important;
+    margin-top: 2px !important;
+  }
+  body[data-sidebar="collapsed"] .sidebar-link i {
+    font-size: 1.5rem !important; /* text-2xl */
+  }
+  body[data-sidebar="collapsed"] #sidebarToggleIcon {
+    transform: rotate(180deg) !important;
+  }
+}

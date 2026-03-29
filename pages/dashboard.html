@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard Analitik - AgriTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: {
+                        agri: { 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d', 950: '#052e16' },
+                        dark: { bg: '#0f172a', card: '#1e293b', border: '#334155' }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body id="mainBody" class="bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-gray-100 font-sans antialiased min-h-screen pl-20 md:pl-64 transition-all duration-300">
+    <header class="pt-8 pb-4 px-6 bg-white dark:bg-dark-card shadow-sm sticky top-0 z-30 transition-colors">
+        <div class="flex justify-between items-center mb-0">
+            <div class="flex items-center gap-3">
+                <a href="../index.html" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-dark-border flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-agri-100 transition-colors">
+                    <i class="ph ph-arrow-left text-xl"></i>
+                </a>
+                <h1 class="text-xl font-bold">Dashboard Analitik</h1>
+            </div>
+            <button id="themeToggle" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-dark-border flex items-center justify-center text-gray-600 dark:text-gray-300">
+                <i class="ph ph-moon text-xl dark:hidden"></i>
+                <i class="ph ph-sun text-xl hidden dark:block"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="px-5 py-6 space-y-6" id="analyticsContainer">
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white dark:bg-dark-card p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-dark-border">
+                <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Total Pemasukan</p>
+                <p class="text-lg md:text-xl font-bold text-blue-600 dark:text-blue-400" id="statIncome">Rp 0</p>
+            </div>
+            <div class="bg-white dark:bg-dark-card p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-dark-border">
+                <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Total Pengeluaran</p>
+                <p class="text-lg md:text-xl font-bold text-red-600 dark:text-red-400" id="statExpense">Rp 0</p>
+            </div>
+            <div class="bg-white dark:bg-dark-card p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-dark-border">
+                <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Total Pembelian</p>
+                <p class="text-lg md:text-xl font-bold text-amber-600 dark:text-amber-400" id="statPurchase">Rp 0</p>
+            </div>
+            <div class="bg-white dark:bg-dark-card p-4 rounded-2xl shadow-sm border border-agri-200 dark:border-agri-900/50 bg-agri-50 dark:bg-agri-900/10">
+                <p class="text-xs font-medium text-agri-700 dark:text-agri-400 mb-1">Net Profit / Saldo</p>
+                <p class="text-lg md:text-xl font-bold text-agri-700 dark:text-agri-300" id="statNet">Rp 0</p>
+            </div>
+        </div>
+
+        <!-- Chart 1: Saldo & Arus Kas (Bar) -->
+        <div class="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border p-5 rounded-2xl shadow-sm">
+            <h3 class="text-lg font-bold mb-4 text-gray-800 dark:text-gray-100">Arus Kas (Pendapatan vs Pengeluaran)</h3>
+            <div class="h-64 w-full relative">
+                <canvas id="cashflowChart"></canvas>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Chart 2: Distribusi Kategori (Doughnut) -->
+            <div class="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border p-5 rounded-2xl shadow-sm flex flex-col">
+                <h3 class="text-base font-bold mb-4 text-gray-800 dark:text-gray-100">Persentase Transaksi</h3>
+                <div class="flex-1 flex items-center justify-center min-h-[220px] relative">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 3: Distribusi Dompet (Doughnut) -->
+            <div class="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border p-5 rounded-2xl shadow-sm flex flex-col">
+                <h3 class="text-base font-bold mb-4 text-gray-800 dark:text-gray-100">Penggunaan Dompet</h3>
+                <div class="flex-1 flex items-center justify-center min-h-[220px] relative">
+                    <canvas id="walletChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Left Navigation Sidebar -->
+    <nav id="sidebar" class="fixed top-0 left-0 bottom-0 w-20 md:w-64 bg-white dark:bg-dark-card border-r border-gray-100 dark:border-dark-border py-8 px-2 md:px-4 flex flex-col items-center md:items-start z-30 transition-all duration-300">
+        <!-- Logo Desktop -->
+        <div id="logoDesktop" class="hidden md:flex items-center gap-3 px-4 mb-10 w-full text-agri-600 dark:text-agri-400">
+            <div class="w-10 h-10 rounded-xl bg-agri-100 dark:bg-agri-900/30 flex items-center justify-center">
+                <i class="ph-fill ph-plant text-2xl"></i>
+            </div>
+            <span class="text-xl font-bold tracking-tight">AgriTrack</span>
+        </div>
+        <!-- Logo Mobile -->
+        <div id="logoMobile" class="md:hidden flex items-center justify-center mb-8 w-full text-agri-600 dark:text-agri-400">
+            <div class="w-12 h-12 rounded-xl bg-agri-100 dark:bg-agri-900/30 flex items-center justify-center">
+                <i class="ph-fill ph-plant text-3xl"></i>
+            </div>
+        </div>
+        
+        <div class="flex flex-col gap-3 w-full">
+            <a href="../index.html" class="sidebar-link flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 w-full p-2 md:px-4 md:py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-border/50 hover:text-agri-600 dark:hover:text-agri-400 transition-all font-bold group">
+                <i class="ph ph-house text-2xl md:text-xl shrink-0 group-hover:drop-shadow-sm"></i>
+                <span class="text-[10px] md:text-sm">Beranda</span>
+            </a>
+            <a href="dashboard.html" class="sidebar-link flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 w-full p-2 md:px-4 md:py-3 rounded-xl bg-agri-50 dark:bg-agri-900/20 text-agri-600 dark:text-agri-400 transition-all font-bold group">
+                <i class="ph-fill ph-chart-pie-slice text-2xl md:text-xl shrink-0"></i>
+                <span class="text-[10px] md:text-sm">Analitik</span>
+            </a>
+            <a href="transactions.html" class="sidebar-link flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 w-full p-2 md:px-4 md:py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-border/50 hover:text-agri-600 dark:hover:text-agri-400 transition-all font-bold group">
+                <i class="ph ph-swap text-2xl md:text-xl shrink-0 group-hover:drop-shadow-sm"></i>
+                <span class="text-[10px] md:text-sm">Transaksi</span>
+            </a>
+            <a href="notes.html" class="sidebar-link flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 w-full p-2 md:px-4 md:py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-border/50 hover:text-agri-600 dark:hover:text-agri-400 transition-all font-bold group">
+                <i class="ph ph-notebook text-2xl md:text-xl shrink-0 group-hover:drop-shadow-sm"></i>
+                <span class="text-[10px] md:text-sm">Catatan</span>
+            </a>
+            <a href="wallet.html" class="sidebar-link flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 w-full p-2 md:px-4 md:py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-border/50 hover:text-agri-600 dark:hover:text-agri-400 transition-all font-bold group">
+                <i class="ph-fill ph-wallet text-2xl md:text-xl shrink-0 group-hover:drop-shadow-sm"></i>
+                <span class="text-[10px] md:text-sm">Dompet</span>
+            </a>
+        </div>
+        
+        <!-- Sidebar Toggle -->
+        <div class="mt-auto w-full pt-4 border-t border-gray-100 dark:border-dark-border hidden md:flex">
+            <button id="sidebarToggle" class="w-full flex items-center justify-center p-3 rounded-xl text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-border/50 hover:text-agri-600 dark:hover:text-agri-400 transition-colors">
+                <i class="ph ph-caret-left text-xl transition-transform duration-300" id="sidebarToggleIcon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- JS -->
+    <script src="../js/store.js"></script>
+    <script src="../js/ui.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            Chart.defaults.color = isDark ? '#94a3b8' : '#64748b'; // slate-400 : slate-500
+            Chart.defaults.font.family = '"Plus Jakarta Sans", sans-serif';
+
+            // Watch theme toggle to update chart globally
+            const toggle = document.getElementById('themeToggle');
+            if(toggle) {
+                toggle.addEventListener('click', () => {
+                    setTimeout(() => {
+                        const newDark = document.documentElement.classList.contains('dark');
+                        Chart.defaults.color = newDark ? '#94a3b8' : '#64748b';
+                        const charts = Object.values(Chart.instances);
+                        charts.forEach(chart => {
+                            if(chart.options.scales && chart.options.scales.x) {
+                                chart.options.scales.x.grid.color = newDark ? '#334155' : '#f1f5f9';
+                                chart.options.scales.y.grid.color = newDark ? '#334155' : '#f1f5f9';
+                            }
+                            chart.update();
+                        });
+                    }, 50);
+                });
+            }
+
+            const transactions = Store.getTransactions();
+            const wallets = Store.getWallets();
+
+            // Populate Stats natively
+            let inc = 0, exp = 0, pur = 0;
+            transactions.forEach(t => {
+                const a = parseFloat(t.amount);
+                if(t.type==='income') inc += a;
+                if(t.type==='expense') exp += a;
+                if(t.type==='purchase') pur += a;
+            });
+            const fmt = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0}).format(num);
+            document.getElementById('statIncome').textContent = fmt(inc);
+            document.getElementById('statExpense').textContent = fmt(exp);
+            document.getElementById('statPurchase').textContent = fmt(pur);
+            document.getElementById('statNet').textContent = fmt(inc - exp - pur);
+
+            // Prepare Chart Data
+            // Grid lines color based on theme
+            const gridColor = isDark ? '#334155' : '#f1f5f9';
+
+            new Chart(document.getElementById('cashflowChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Pemasukan', 'Pengeluaran', 'Pembelian Aset'],
+                    datasets: [{
+                        label: 'Total Rupiah',
+                        data: [inc, exp, pur],
+                        backgroundColor: ['#3b82f6', '#ef4444', '#f59e0b'],
+                        borderRadius: 6,
+                        barPercentage: 0.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: gridColor, drawBorder: false }
+                        },
+                        x: {
+                            grid: { display: false, drawBorder: false }
+                        }
+                    }
+                }
+            });
+
+            // Category Chart (Doughnut)
+            let catData = [inc, exp, pur];
+            if(inc === 0 && exp === 0 && pur === 0) catData = [1, 1, 1]; // fallback empty
+            new Chart(document.getElementById('categoryChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pemasukan', 'Pengeluaran', 'Pembelian'],
+                    datasets: [{
+                        data: catData,
+                        backgroundColor: ['#3b82f6', '#ef4444', '#f59e0b'],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            // Wallet Chart
+            // map wallets to their transaction occurrence counts
+            let wLabels = [];
+            let wData = [];
+            let wColors = [];
+            const wColorPalette = ['#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#f97316'];
+            
+            wallets.forEach((w, idx) => {
+                const count = transactions.filter(t => t.walletId === w.id || (!t.walletId && w.id === 'w-cash')).length;
+                if(count > 0 || wallets.length <= 2) {
+                    wLabels.push(w.name);
+                    wData.push(count);
+                    wColors.push(wColorPalette[idx % wColorPalette.length]);
+                }
+            });
+
+            if(wData.length === 0 || wData.every(x => x === 0)) wData = wLabels.map(()=>1); // fallback empty
+
+            new Chart(document.getElementById('walletChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: wLabels,
+                    datasets: [{
+                        data: wData,
+                        backgroundColor: wColors,
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
