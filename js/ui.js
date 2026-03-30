@@ -2,7 +2,7 @@ const UI = {
     formatCurrency(amount) {
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
     },
-    
+
     formatDate(dateString) {
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         return new Date(dateString).toLocaleDateString('id-ID', options);
@@ -10,10 +10,10 @@ const UI = {
 
     renderDashboardStats() {
         const transactions = Store.getTransactions();
-        
+
         let totalIncome = 0;
         let totalExpense = 0;
-        
+
         transactions.forEach(t => {
             const amount = parseFloat(t.amount);
             if (t.type === 'income') totalIncome += amount;
@@ -23,13 +23,13 @@ const UI = {
         const totalBalance = totalIncome - totalExpense;
 
         const balEl = document.getElementById('totalBalance');
-        if(balEl) balEl.textContent = this.formatCurrency(totalBalance);
-        
+        if (balEl) balEl.textContent = this.formatCurrency(totalBalance);
+
         const inEl = document.getElementById('totalIncome');
-        if(inEl) inEl.textContent = this.formatCurrency(totalIncome);
-        
+        if (inEl) inEl.textContent = this.formatCurrency(totalIncome);
+
         const exEl = document.getElementById('totalExpense');
-        if(exEl) exEl.textContent = this.formatCurrency(totalExpense);
+        if (exEl) exEl.textContent = this.formatCurrency(totalExpense);
     },
 
     renderRecentTransactions() {
@@ -41,10 +41,10 @@ const UI = {
         };
 
         const container = document.getElementById('recentTransactionsList');
-        if(!container) return;
-        
+        if (!container) return;
+
         container.innerHTML = '';
-        
+
         if (transactions.length === 0) {
             container.innerHTML = '<div class="flex items-center justify-center py-8 text-gray-400 dark:text-gray-500 text-sm">Belum ada transaksi aktivitas.</div>';
             return;
@@ -74,16 +74,16 @@ const UI = {
 
             let titleHtml = `<p class="text-sm font-bold text-gray-900 dark:text-white line-clamp-1 flex items-center">${t.note || label}</p>`;
             let extraLines = '';
-            
+
             let dateStr = `${this.formatDate(t.date)} &bull; <span class="font-medium text-gray-900 dark:text-gray-300 ml-1">${getWalletName(t.walletId)}</span>`;
-            
+
             if (t.type === 'expense' && t.expenseCategory === 'purchase') {
                 const qtyStr = t.itemQuantity ? `${t.itemQuantity}` : '';
                 const unitStr = t.itemUnit ? ` ${t.itemUnit}` : '';
                 const qtyHtml = qtyStr ? ` <span class="text-agri-600 dark:text-agri-400 font-semibold ml-1.5">${qtyStr}${unitStr}</span>` : '';
-                
+
                 titleHtml = `<p class="text-sm font-bold text-gray-900 dark:text-white line-clamp-1 flex items-center">${t.itemName || 'Pembelian'}${qtyHtml}</p>`;
-                
+
                 if (t.itemSupplier) {
                     extraLines += `<p class="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">Asal: <span class="font-medium text-gray-800 dark:text-gray-200">${t.itemSupplier}</span></p>`;
                 }
@@ -104,9 +104,9 @@ const UI = {
                     const qtyStr = t.saleQuantity ? `${t.saleQuantity}` : '';
                     const unitStr = t.saleUnit ? ` ${t.saleUnit}` : '';
                     const qtyHtml = qtyStr ? ` <span class="text-blue-600 dark:text-blue-400 font-semibold ml-1.5">${qtyStr}${unitStr}</span>` : '';
-                    
+
                     titleHtml = `<p class="text-sm font-bold text-gray-900 dark:text-white line-clamp-1 flex items-center">${t.saleItemName || 'Penjualan'}${qtyHtml}</p>`;
-                    
+
                     if (t.saleBuyer) {
                         extraLines += `<p class="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">Pembeli: <span class="font-medium text-gray-800 dark:text-gray-200">${t.saleBuyer}</span></p>`;
                     }
@@ -145,10 +145,10 @@ const UI = {
     renderAllTransactions(filter = 'all') {
         const transactions = Store.getTransactions();
         const container = document.getElementById('transactionListContainer');
-        if(!container) return;
-        
+        if (!container) return;
+
         container.innerHTML = '';
-        
+
         let filtered = [...transactions].sort((a, b) => {
             const dateDiff = new Date(b.date) - new Date(a.date);
             return dateDiff !== 0 ? dateDiff : parseInt(b.id) - parseInt(a.id);
@@ -157,9 +157,13 @@ const UI = {
             filtered = filtered.filter(t => t.type === filter);
         }
 
-        const monthQuery = window.activeMonthFilter || '';
-        if (monthQuery) {
-            filtered = filtered.filter(t => t.date && t.date.startsWith(monthQuery));
+        // Filter by month if activeMonthFilter is set
+        if (window.activeMonthFilter) {
+            filtered = filtered.filter(t => {
+                const transDate = new Date(t.date);
+                const transMonth = `${transDate.getFullYear()}-${String(transDate.getMonth() + 1).padStart(2, '0')}`;
+                return transMonth === window.activeMonthFilter;
+            });
         }
 
         const searchInput = document.getElementById('searchTransactionInput');
@@ -195,7 +199,7 @@ const UI = {
 
             let titleHtml = `<p class="text-base font-bold text-gray-900 dark:text-white line-clamp-1 flex items-center">${t.note || label}</p>`;
             let extraLines = '';
-            
+
             const wName = Store.getWallets().find(w => w.id === t.walletId)?.name || 'Uang Tunai';
             let dateStr = `${this.formatDate(t.date)} &bull; <span class="font-medium text-gray-900 dark:text-gray-300 ml-1">${wName}</span>`;
 
@@ -203,9 +207,9 @@ const UI = {
                 const qtyStr = t.itemQuantity ? `${t.itemQuantity}` : '';
                 const unitStr = t.itemUnit ? ` ${t.itemUnit}` : '';
                 const qtyHtml = qtyStr ? ` <span class="text-agri-600 dark:text-agri-400 font-semibold ml-2">${qtyStr}${unitStr}</span>` : '';
-                
+
                 titleHtml = `<p class="text-base font-bold text-gray-900 dark:text-white line-clamp-1 flex items-center">${t.itemName || 'Pembelian'}${qtyHtml}</p>`;
-                
+
                 if (t.itemSupplier) {
                     extraLines += `<p class="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">Asal: <span class="font-medium text-gray-800 dark:text-gray-200">${t.itemSupplier}</span></p>`;
                 }
@@ -226,9 +230,9 @@ const UI = {
                     const qtyStr = t.saleQuantity ? `${t.saleQuantity}` : '';
                     const unitStr = t.saleUnit ? ` ${t.saleUnit}` : '';
                     const qtyHtml = qtyStr ? ` <span class="text-blue-600 dark:text-blue-400 font-semibold ml-2">${qtyStr}${unitStr}</span>` : '';
-                    
+
                     titleHtml = `<p class="text-base font-bold text-gray-900 dark:text-white line-clamp-1 flex items-center">${t.saleItemName || 'Penjualan'}${qtyHtml}</p>`;
-                    
+
                     if (t.saleBuyer) {
                         extraLines += `<p class="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">Pembeli: <span class="font-medium text-gray-800 dark:text-gray-200">${t.saleBuyer}</span></p>`;
                     }
@@ -246,7 +250,7 @@ const UI = {
             const el = document.createElement('div');
             el.className = 'flex items-center justify-between p-4 mb-3 bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl shadow-sm transition-transform active:scale-[0.98] cursor-pointer hover:border-agri-200 dark:hover:border-agri-800';
             el.onclick = () => window.editTransaction(t.id);
-            
+
             el.innerHTML = `
                 <div class="flex items-center gap-3 flex-1 min-w-0 pr-2">
                     <div class="w-12 h-12 rounded-full ${bgClass} flex items-center justify-center shrink-0">
@@ -269,10 +273,10 @@ const UI = {
     renderNotes() {
         const notes = Store.getNotes();
         const container = document.getElementById('notesListContainer');
-        if(!container) return;
-        
+        if (!container) return;
+
         container.innerHTML = '';
-        
+
         if (notes.length === 0) {
             container.innerHTML = '<div class="flex flex-col items-center justify-center py-16 text-gray-400 dark:text-gray-500 col-span-full"><i class="ph ph-notebook text-6xl mb-4 opacity-50"></i><p>Belum ada catatan.</p></div>';
             return;
@@ -284,7 +288,7 @@ const UI = {
             const el = document.createElement('div');
             el.className = 'bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl p-5 shadow-sm transition-transform active:scale-[0.98] cursor-pointer hover:border-agri-200 dark:hover:border-agri-800 break-words flex flex-col h-full';
             el.onclick = () => window.editNote(n.id);
-            
+
             // Format truncated content for preview
             const preview = n.content.length > 150 ? n.content.substring(0, 150) + '...' : n.content;
 
@@ -302,10 +306,10 @@ const UI = {
     renderRecentNotes() {
         const notes = Store.getNotes();
         const container = document.getElementById('recentNotesList');
-        if(!container) return;
-        
+        if (!container) return;
+
         container.innerHTML = '';
-        
+
         if (notes.length === 0) {
             container.innerHTML = '<div class="flex items-center justify-center py-8 text-gray-400 dark:text-gray-500 text-sm">Belum ada catatan aktif.</div>';
             return;
@@ -317,7 +321,7 @@ const UI = {
             const el = document.createElement('div');
             el.className = 'flex flex-col p-4 bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-xl shadow-sm transition-transform hover:scale-[1.02] cursor-pointer hover:border-agri-200 dark:hover:border-agri-800';
             el.onclick = () => window.location.href = './pages/notes.html';
-            
+
             const preview = n.content.length > 80 ? n.content.substring(0, 80) + '...' : n.content;
 
             el.innerHTML = `
@@ -337,10 +341,10 @@ const UI = {
     renderWallets() {
         const wallets = Store.getWallets();
         const container = document.getElementById('walletListContainer');
-        if(!container) return;
-        
+        if (!container) return;
+
         container.innerHTML = '';
-        
+
         if (wallets.length === 0) {
             container.innerHTML = '<div class="flex flex-col items-center justify-center py-16 text-gray-400 dark:text-gray-500 col-span-full"><i class="ph ph-wallet text-6xl mb-4 opacity-50"></i><p>Belum ada dompet.</p></div>';
             return;
@@ -368,7 +372,7 @@ const UI = {
             const el = document.createElement('div');
             el.className = `bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl p-6 shadow-sm ${shadowColor} transition-transform active:scale-[0.98] cursor-pointer ${bgHoverClass} flex flex-col h-full group`;
             el.onclick = () => window.editWallet(w.id);
-            
+
             el.innerHTML = `
                 <div class="flex justify-between items-start mb-6">
                     <div class="w-12 h-12 rounded-xl ${badgeBgClass} flex items-center justify-center border-white dark:border-dark-bg border-[3px] shadow-sm transform -rotate-6 group-hover:rotate-0 transition-transform">
