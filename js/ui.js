@@ -13,16 +13,14 @@ const UI = {
         
         let totalIncome = 0;
         let totalExpense = 0;
-        let totalPurchase = 0;
         
         transactions.forEach(t => {
             const amount = parseFloat(t.amount);
             if (t.type === 'income') totalIncome += amount;
             if (t.type === 'expense') totalExpense += amount;
-            if (t.type === 'purchase') totalPurchase += amount;
         });
 
-        const totalBalance = totalIncome - totalExpense - totalPurchase;
+        const totalBalance = totalIncome - totalExpense;
 
         const balEl = document.getElementById('totalBalance');
         if(balEl) balEl.textContent = this.formatCurrency(totalBalance);
@@ -32,9 +30,6 @@ const UI = {
         
         const exEl = document.getElementById('totalExpense');
         if(exEl) exEl.textContent = this.formatCurrency(totalExpense);
-        
-        const purEl = document.getElementById('totalPurchase');
-        if(purEl) purEl.textContent = this.formatCurrency(totalPurchase);
     },
 
     renderRecentTransactions() {
@@ -56,7 +51,10 @@ const UI = {
         }
 
         // Sort descending and take top 5
-        const recent = transactions.sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+        const recent = [...transactions].sort((a, b) => {
+            const dateDiff = new Date(b.date) - new Date(a.date);
+            return dateDiff !== 0 ? dateDiff : parseInt(b.id) - parseInt(a.id);
+        }).slice(0, 5);
 
         recent.forEach(t => {
             let iconClass, bgClass, textClass, sign, label;
@@ -66,41 +64,79 @@ const UI = {
                 textClass = 'text-blue-600 dark:text-blue-400';
                 sign = '+';
                 label = 'Pemasukan';
-            } else if (t.type === 'expense') {
+            } else {
                 iconClass = 'ph-arrow-up-right text-red-600 dark:text-red-400';
                 bgClass = 'bg-red-100 dark:bg-red-900/30';
                 textClass = 'text-red-600 dark:text-red-400';
                 sign = '-';
                 label = 'Pengeluaran';
-            } else {
-                iconClass = 'ph-shopping-cart text-amber-600 dark:text-amber-400';
-                bgClass = 'bg-amber-100 dark:bg-amber-900/30';
-                textClass = 'text-amber-600 dark:text-amber-400';
-                sign = '-';
-                label = 'Pembelian';
             }
 
-            let secondaryText = `${this.formatDate(t.date)} &bull; <span class="font-medium text-gray-900 dark:text-gray-300 ml-1">${getWalletName(t.walletId)}</span>`;
-            if (t.type === 'purchase' && t.itemName) {
-                secondaryText = `${this.formatDate(t.date)} &bull; ${t.itemName} (${t.itemUnit || '-'}) &bull; <span class="font-medium text-gray-900 dark:text-gray-300 ml-1">${getWalletName(t.walletId)}</span>`;
+            let titleHtml = `<p class="text-sm font-bold text-gray-900 dark:text-white line-clamp-1 flex items-center">${t.note || label}</p>`;
+            let extraLines = '';
+            
+            let dateStr = `${this.formatDate(t.date)} &bull; <span class="font-medium text-gray-900 dark:text-gray-300 ml-1">${getWalletName(t.walletId)}</span>`;
+            
+            if (t.type === 'expense' && t.expenseCategory === 'purchase') {
+                const qtyStr = t.itemQuantity ? `${t.itemQuantity}` : '';
+                const unitStr = t.itemUnit ? ` ${t.itemUnit}` : '';
+                const qtyHtml = qtyStr ? ` <span class="text-agri-600 dark:text-agri-400 font-semibold ml-1.5">${qtyStr}${unitStr}</span>` : '';
+                
+                titleHtml = `<p class="text-sm font-bold text-gray-900 dark:text-white line-clamp-1 flex items-center">${t.itemName || 'Pembelian'}${qtyHtml}</p>`;
+                
+                if (t.itemSupplier) {
+                    extraLines += `<p class="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">Asal: <span class="font-medium text-gray-800 dark:text-gray-200">${t.itemSupplier}</span></p>`;
+                }
+                if (t.note) {
+                    extraLines += `<p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1 italic">"${t.note}"</p>`;
+                }
             } else if (t.type === 'expense' && t.expenseCategory === 'wage') {
                 const wType = t.wageType === 'monthly' ? 'Bulanan' : 'Harian';
-                secondaryText = `${this.formatDate(t.date)} &bull; Upah ${wType} (${t.workerName || '-'}) &bull; <span class="font-medium text-gray-900 dark:text-gray-300 ml-1">${getWalletName(t.walletId)}</span>`;
+                titleHtml = `<p class="text-sm font-bold text-gray-900 dark:text-white line-clamp-1 flex items-center">Upah Kerja ${wType}</p>`;
+                if (t.workerName) {
+                    extraLines += `<p class="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">Pekerja: <span class="font-medium text-gray-800 dark:text-gray-200">${t.workerName}</span></p>`;
+                }
+                if (t.note) {
+                    extraLines += `<p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1 italic">"${t.note}"</p>`;
+                }
+            } else if (t.type === 'income') {
+                if (t.incomeCategory === 'sale') {
+                    const qtyStr = t.saleQuantity ? `${t.saleQuantity}` : '';
+                    const unitStr = t.saleUnit ? ` ${t.saleUnit}` : '';
+                    const qtyHtml = qtyStr ? ` <span class="text-blue-600 dark:text-blue-400 font-semibold ml-1.5">${qtyStr}${unitStr}</span>` : '';
+                    
+                    titleHtml = `<p class="text-sm font-bold text-gray-900 dark:text-white line-clamp-1 flex items-center">${t.saleItemName || 'Penjualan'}${qtyHtml}</p>`;
+                    
+                    if (t.saleBuyer) {
+                        extraLines += `<p class="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">Pembeli: <span class="font-medium text-gray-800 dark:text-gray-200">${t.saleBuyer}</span></p>`;
+                    }
+                    if (t.note) {
+                        extraLines += `<p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1 italic">"${t.note}"</p>`;
+                    }
+                } else {
+                    titleHtml = `<p class="text-sm font-bold text-gray-900 dark:text-white line-clamp-1 flex items-center">${t.incomeName || t.note || label}</p>`;
+                    if (t.incomeName && t.note) {
+                        extraLines += `<p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1 italic">"${t.note}"</p>`;
+                    }
+                }
             }
 
             const el = document.createElement('div');
             el.className = 'flex items-center justify-between p-3 bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-xl shadow-sm transition-transform hover:scale-[1.02]';
             el.innerHTML = `
-                <div class="flex items-center gap-3 w-full overflow-hidden pr-3">
+                <div class="flex items-center gap-3 flex-1 min-w-0 pr-2">
                     <div class="w-10 h-10 rounded-full ${bgClass} flex items-center justify-center shrink-0">
                         <i class="ph ${iconClass} text-xl"></i>
                     </div>
-                    <div class="overflow-hidden">
-                        <p class="text-sm font-bold truncate">${t.note || label}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${secondaryText}</p>
+                    <div class="min-w-0 flex-1 flex flex-col justify-center">
+                        ${titleHtml}
+                        ${extraLines}
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">${dateStr}</p>
                     </div>
                 </div>
-                <p class="text-sm font-bold ${textClass} shrink-0">${sign} ${this.formatCurrency(t.amount)}</p>
+                <div class="text-right shrink-0 ml-2 mt-[2px] self-start items-end flex flex-col">
+                    <p class="text-sm font-bold ${textClass}">${sign} ${this.formatCurrency(t.amount)}</p>
+                </div>
             `;
             container.appendChild(el);
         });
@@ -113,9 +149,17 @@ const UI = {
         
         container.innerHTML = '';
         
-        let filtered = transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+        let filtered = [...transactions].sort((a, b) => {
+            const dateDiff = new Date(b.date) - new Date(a.date);
+            return dateDiff !== 0 ? dateDiff : parseInt(b.id) - parseInt(a.id);
+        });
         if (filter !== 'all') {
             filtered = filtered.filter(t => t.type === filter);
+        }
+
+        const monthQuery = window.activeMonthFilter || '';
+        if (monthQuery) {
+            filtered = filtered.filter(t => t.date && t.date.startsWith(monthQuery));
         }
 
         const searchInput = document.getElementById('searchTransactionInput');
@@ -123,7 +167,7 @@ const UI = {
         if (query) {
             filtered = filtered.filter(t => {
                 const wName = Store.getWallets().find(w => w.id === t.walletId)?.name || 'Uang Tunai';
-                const searchStr = `${t.note || ''} ${t.itemName || ''} ${t.workerName || ''} ${t.amount || ''} ${wName}`.toLowerCase();
+                const searchStr = `${t.note || ''} ${t.itemName || ''} ${t.itemSupplier || ''} ${t.workerName || ''} ${t.incomeName || ''} ${t.saleItemName || ''} ${t.saleBuyer || ''} ${t.amount || ''} ${wName}`.toLowerCase();
                 return searchStr.includes(query);
             });
         }
@@ -141,26 +185,62 @@ const UI = {
                 textClass = 'text-blue-600 dark:text-blue-400';
                 sign = '+';
                 label = 'Pemasukan';
-            } else if (t.type === 'expense') {
+            } else {
                 iconClass = 'ph-arrow-up-right text-red-600 dark:text-red-400';
                 bgClass = 'bg-red-100 dark:bg-red-900/30';
                 textClass = 'text-red-600 dark:text-red-400';
                 sign = '-';
                 label = 'Pengeluaran';
-            } else {
-                iconClass = 'ph-shopping-cart text-amber-600 dark:text-amber-400';
-                bgClass = 'bg-amber-100 dark:bg-amber-900/30';
-                textClass = 'text-amber-600 dark:text-amber-400';
-                sign = '-';
-                label = 'Pembelian';
             }
 
-            let itemDesc = label;
-            if (t.type === 'purchase' && t.itemName) {
-                itemDesc = `${label} (${t.itemName} - ${t.itemUnit || '-'})`;
+            let titleHtml = `<p class="text-base font-bold text-gray-900 dark:text-white line-clamp-1 flex items-center">${t.note || label}</p>`;
+            let extraLines = '';
+            
+            const wName = Store.getWallets().find(w => w.id === t.walletId)?.name || 'Uang Tunai';
+            let dateStr = `${this.formatDate(t.date)} &bull; <span class="font-medium text-gray-900 dark:text-gray-300 ml-1">${wName}</span>`;
+
+            if (t.type === 'expense' && t.expenseCategory === 'purchase') {
+                const qtyStr = t.itemQuantity ? `${t.itemQuantity}` : '';
+                const unitStr = t.itemUnit ? ` ${t.itemUnit}` : '';
+                const qtyHtml = qtyStr ? ` <span class="text-agri-600 dark:text-agri-400 font-semibold ml-2">${qtyStr}${unitStr}</span>` : '';
+                
+                titleHtml = `<p class="text-base font-bold text-gray-900 dark:text-white line-clamp-1 flex items-center">${t.itemName || 'Pembelian'}${qtyHtml}</p>`;
+                
+                if (t.itemSupplier) {
+                    extraLines += `<p class="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">Asal: <span class="font-medium text-gray-800 dark:text-gray-200">${t.itemSupplier}</span></p>`;
+                }
+                if (t.note) {
+                    extraLines += `<p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1 italic">"${t.note}"</p>`;
+                }
             } else if (t.type === 'expense' && t.expenseCategory === 'wage') {
                 const wType = t.wageType === 'monthly' ? 'Bulanan' : 'Harian';
-                itemDesc = `Upah Kerja ${wType} (${t.workerName || '-'})`;
+                titleHtml = `<p class="text-base font-bold text-gray-900 dark:text-white line-clamp-1 flex items-center">Upah Kerja ${wType}</p>`;
+                if (t.workerName) {
+                    extraLines += `<p class="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">Pekerja: <span class="font-medium text-gray-800 dark:text-gray-200">${t.workerName}</span></p>`;
+                }
+                if (t.note) {
+                    extraLines += `<p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1 italic">"${t.note}"</p>`;
+                }
+            } else if (t.type === 'income') {
+                if (t.incomeCategory === 'sale') {
+                    const qtyStr = t.saleQuantity ? `${t.saleQuantity}` : '';
+                    const unitStr = t.saleUnit ? ` ${t.saleUnit}` : '';
+                    const qtyHtml = qtyStr ? ` <span class="text-blue-600 dark:text-blue-400 font-semibold ml-2">${qtyStr}${unitStr}</span>` : '';
+                    
+                    titleHtml = `<p class="text-base font-bold text-gray-900 dark:text-white line-clamp-1 flex items-center">${t.saleItemName || 'Penjualan'}${qtyHtml}</p>`;
+                    
+                    if (t.saleBuyer) {
+                        extraLines += `<p class="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-1">Pembeli: <span class="font-medium text-gray-800 dark:text-gray-200">${t.saleBuyer}</span></p>`;
+                    }
+                    if (t.note) {
+                        extraLines += `<p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1 italic">"${t.note}"</p>`;
+                    }
+                } else {
+                    titleHtml = `<p class="text-base font-bold text-gray-900 dark:text-white line-clamp-1 flex items-center">${t.incomeName || t.note || label}</p>`;
+                    if (t.incomeName && t.note) {
+                        extraLines += `<p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1 italic">"${t.note}"</p>`;
+                    }
+                }
             }
 
             const el = document.createElement('div');
@@ -168,17 +248,18 @@ const UI = {
             el.onclick = () => window.editTransaction(t.id);
             
             el.innerHTML = `
-                <div class="flex items-center gap-3 w-full overflow-hidden pr-3">
+                <div class="flex items-center gap-3 flex-1 min-w-0 pr-2">
                     <div class="w-12 h-12 rounded-full ${bgClass} flex items-center justify-center shrink-0">
                         <i class="ph ${iconClass} text-2xl"></i>
                     </div>
-                    <div class="overflow-hidden">
-                        <p class="text-base font-bold text-gray-900 dark:text-white truncate">${t.note || label}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">${this.formatDate(t.date)} &bull; ${itemDesc} &bull; <span class="font-medium text-gray-900 dark:text-gray-300 ml-1">${Store.getWallets().find(w => w.id === t.walletId)?.name || 'Uang Tunai'}</span></p>
+                    <div class="min-w-0 flex-1 flex flex-col justify-center">
+                        ${titleHtml}
+                        ${extraLines}
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1 leading-relaxed">${dateStr}</p>
                     </div>
                 </div>
-                <div class="text-right shrink-0">
-                    <p class="text-sm border rounded-lg px-2 py-1 shadow-sm font-bold ${textClass} ${t.type === 'income' ? 'border-blue-200 bg-blue-50/50 dark:border-blue-900/50 dark:bg-blue-900/10' : (t.type === 'expense' ? 'border-red-200 bg-red-50/50 dark:border-red-900/50 dark:bg-red-900/10' : 'border-amber-200 bg-amber-50/50 dark:border-amber-900/50 dark:bg-amber-900/10')}">${sign} ${this.formatCurrency(t.amount)}</p>
+                <div class="text-right shrink-0 ml-2 mt-1 self-start items-end flex flex-col">
+                    <p class="text-sm border rounded-lg px-2 py-1 shadow-sm font-bold ${textClass} ${t.type === 'income' ? 'border-blue-200 bg-blue-50/50 dark:border-blue-900/50 dark:bg-blue-900/10' : 'border-red-200 bg-red-50/50 dark:border-red-900/50 dark:bg-red-900/10'}">${sign} ${this.formatCurrency(t.amount)}</p>
                 </div>
             `;
             container.appendChild(el);
@@ -273,7 +354,7 @@ const UI = {
                 if (t.walletId === w.id || (!t.walletId && w.id === 'w-cash')) {
                     const amt = parseFloat(t.amount);
                     if (t.type === 'income') balance += amt;
-                    if (t.type === 'expense' || t.type === 'purchase') balance -= amt;
+                    if (t.type === 'expense') balance -= amt;
                 }
             });
 

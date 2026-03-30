@@ -20,29 +20,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Sidebar Toggle Logic
-    const initSidebar = () => {
-        const mainBody = document.getElementById('mainBody');
-        const toggleBtn = document.getElementById('sidebarToggle');
-        
-        if (!mainBody || !toggleBtn) return;
-
-        if (localStorage.sidebar === 'collapsed') {
-            mainBody.setAttribute('data-sidebar', 'collapsed');
-        }
-
-        toggleBtn.addEventListener('click', () => {
-            const isCollapsed = mainBody.getAttribute('data-sidebar') === 'collapsed';
-            if (isCollapsed) {
-                mainBody.removeAttribute('data-sidebar');
-                localStorage.sidebar = 'expanded';
-            } else {
-                mainBody.setAttribute('data-sidebar', 'collapsed');
-                localStorage.sidebar = 'collapsed';
+    // Migration logic for old 'purchase' transactions
+    try {
+        let _tx = Store.getTransactions();
+        let _migrated = false;
+        _tx.forEach(t => {
+            if (t.type === 'purchase') {
+                t.type = 'expense';
+                t.expenseCategory = 'purchase';
+                _migrated = true;
             }
         });
-    };
-    initSidebar();
+        if (_migrated) Store.saveTransactions(_tx);
+    } catch(e) { }
 
     // Initialize Dashboard UI if on dashboard
     if (document.getElementById('totalBalance')) {
@@ -63,6 +53,98 @@ document.addEventListener('DOMContentLoaded', () => {
                 const activeFilterBtn = document.querySelector('.filter-btn.bg-agri-600');
                 const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.filter : 'all';
                 UI.renderAllTransactions(activeFilter);
+            });
+        }
+
+        const openMonthPickerBtn = document.getElementById('openMonthPickerBtn');
+        const monthPickerModal = document.getElementById('monthPickerModal');
+        const monthPickerContent = document.getElementById('monthPickerContent');
+        const mpCurrentYear = document.getElementById('mpCurrentYear');
+        const mpPrevYear = document.getElementById('mpPrevYear');
+        const mpNextYear = document.getElementById('mpNextYear');
+        const mpMonthsGrid = document.getElementById('mpMonthsGrid');
+        const mpClearBtn = document.getElementById('mpClearBtn');
+        const mpCloseBtn = document.getElementById('mpCloseBtn');
+        const monthPickerBtnText = document.getElementById('monthPickerBtnText');
+
+        if (openMonthPickerBtn && monthPickerModal) {
+            let activeYear = new Date().getFullYear();
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"];
+
+            const triggerSearch = () => {
+                const activeFilterBtn = document.querySelector('.filter-btn.bg-agri-600');
+                const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.filter : 'all';
+                UI.renderAllTransactions(activeFilter);
+            };
+
+            const closeMp = () => {
+                monthPickerModal.classList.add('opacity-0');
+                monthPickerContent.classList.add('scale-95');
+                setTimeout(() => monthPickerModal.classList.add('hidden'), 300);
+            };
+
+            const renderMonthsGrid = () => {
+                mpCurrentYear.textContent = activeYear;
+                mpMonthsGrid.innerHTML = '';
+                
+                const currentFilterParts = window.activeMonthFilter ? window.activeMonthFilter.split('-') : null;
+                const filterYear = currentFilterParts ? parseInt(currentFilterParts[0]) : null;
+                const filterMonth = currentFilterParts ? parseInt(currentFilterParts[1]) : null;
+                
+                let activeBtn = null;
+                monthNames.forEach((m, idx) => {
+                    const btn = document.createElement('button');
+                    const monthNum = idx + 1; // 1 to 12
+                    const isActive = (filterYear === activeYear && filterMonth === monthNum);
+                    
+                    btn.type = "button";
+                    btn.className = `p-3 rounded-xl text-center font-bold text-sm transition-all ${
+                        isActive 
+                        ? 'bg-agri-600 text-white shadow-md shadow-agri-600/30' 
+                        : 'bg-gray-50 dark:bg-dark-bg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 border border-transparent'
+                    }`;
+                    btn.textContent = m;
+                    
+                    btn.addEventListener('click', () => {
+                        window.activeMonthFilter = `${activeYear}-${monthNum.toString().padStart(2, '0')}`;
+                        monthPickerBtnText.textContent = `${m} ${activeYear}`;
+                        closeMp();
+                        triggerSearch();
+                    });
+                    
+                    if (isActive) activeBtn = btn;
+                    mpMonthsGrid.appendChild(btn);
+                });
+            };
+
+            window.openMonthPickerModal = () => {
+                monthPickerModal.classList.remove('hidden');
+                setTimeout(() => {
+                    monthPickerModal.classList.remove('opacity-0');
+                    monthPickerContent.classList.remove('scale-95');
+                }, 10);
+                
+                if (window.activeMonthFilter) {
+                    activeYear = parseInt(window.activeMonthFilter.split('-')[0]);
+                } else {
+                    activeYear = new Date().getFullYear();
+                }
+                renderMonthsGrid();
+            };
+
+            mpCloseBtn.addEventListener('click', closeMp);
+            monthPickerModal.addEventListener('click', (e) => {
+                if (e.target === monthPickerModal) closeMp();
+            });
+
+            mpPrevYear.addEventListener('click', () => { activeYear--; renderMonthsGrid(); });
+            mpNextYear.addEventListener('click', () => { activeYear++; renderMonthsGrid(); });
+
+            mpClearBtn.addEventListener('click', () => {
+                window.activeMonthFilter = '';
+                monthPickerBtnText.textContent = 'Bulan';
+                closeMp();
+                triggerSearch();
             });
         }
 
@@ -92,11 +174,44 @@ document.addEventListener('DOMContentLoaded', () => {
         const purchaseFields = document.getElementById('purchaseFields');
         const itemNameInput = document.getElementById('transItemName');
         const itemUnitInput = document.getElementById('transItemUnit');
+        const itemQuantityInput = document.getElementById('transItemQuantity');
+        const itemSupplierInput = document.getElementById('transItemSupplier');
+        const incomeCategoryContainer = document.getElementById('incomeCategoryContainer');
+        const incomeCategoryRadios = document.querySelectorAll('input[name="incomeCategory"]');
+        const incomeGeneralFields = document.getElementById('incomeGeneralFields');
+        const incomeNameInput = document.getElementById('transIncomeName');
+        const saleFields = document.getElementById('saleFields');
+        const saleItemNameInput = document.getElementById('saleItemName');
+        const saleQuantityInput = document.getElementById('saleQuantity');
+        const saleUnitInput = document.getElementById('saleUnit');
+        const saleBuyerInput = document.getElementById('saleBuyer');
         
         const expenseCategoryContainer = document.getElementById('expenseCategoryContainer');
         const expenseCategoryRadios = document.querySelectorAll('input[name="expenseCategory"]');
         const wageFields = document.getElementById('wageFields');
         const transWorkerName = document.getElementById('transWorkerName');
+
+        if (incomeCategoryRadios && incomeGeneralFields && saleFields) {
+            incomeCategoryRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if (e.target.value === 'general') {
+                        incomeGeneralFields.classList.remove('hidden');
+                        if (incomeNameInput) incomeNameInput.required = true;
+                        saleFields.classList.add('hidden');
+                        if (saleItemNameInput) saleItemNameInput.required = false;
+                        if (saleQuantityInput) saleQuantityInput.required = false;
+                        if (saleUnitInput) saleUnitInput.required = false;
+                    } else if (e.target.value === 'sale') {
+                        saleFields.classList.remove('hidden');
+                        if (saleItemNameInput) saleItemNameInput.required = true;
+                        if (saleQuantityInput) saleQuantityInput.required = true;
+                        if (saleUnitInput) saleUnitInput.required = true;
+                        incomeGeneralFields.classList.add('hidden');
+                        if (incomeNameInput) incomeNameInput.required = false;
+                    }
+                });
+            });
+        }
 
         if (expenseCategoryRadios && wageFields) {
             expenseCategoryRadios.forEach(radio => {
@@ -104,9 +219,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (e.target.value === 'wage') {
                         wageFields.classList.remove('hidden');
                         if (transWorkerName) transWorkerName.required = true;
+                        if (purchaseFields) purchaseFields.classList.add('hidden');
+                        if (itemNameInput) itemNameInput.required = false;
+                        if (itemUnitInput) itemUnitInput.required = false;
+                        if (itemQuantityInput) itemQuantityInput.required = false;
+                        if (itemSupplierInput) itemSupplierInput.required = false;
+                    } else if (e.target.value === 'purchase') {
+                        if (purchaseFields) purchaseFields.classList.remove('hidden');
+                        if (itemNameInput) itemNameInput.required = true;
+                        if (itemUnitInput) itemUnitInput.required = true;
+                        if (itemQuantityInput) itemQuantityInput.required = true;
+                        if (itemSupplierInput) itemSupplierInput.required = true;
+                        wageFields.classList.add('hidden');
+                        if (transWorkerName) transWorkerName.required = false;
                     } else {
                         wageFields.classList.add('hidden');
                         if (transWorkerName) transWorkerName.required = false;
+                        if (purchaseFields) purchaseFields.classList.add('hidden');
+                        if (itemNameInput) itemNameInput.required = false;
+                        if (itemUnitInput) itemUnitInput.required = false;
+                        if (itemQuantityInput) itemQuantityInput.required = false;
+                        if (itemSupplierInput) itemSupplierInput.required = false;
                     }
                 });
             });
@@ -115,33 +248,69 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeRadios) {
             typeRadios.forEach(radio => {
                 radio.addEventListener('change', (e) => {
-                    if (e.target.value === 'purchase') {
-                        if (purchaseFields) purchaseFields.classList.remove('hidden');
-                        if (itemNameInput) itemNameInput.required = true;
-                        if (itemUnitInput) itemUnitInput.required = true;
-                        if (expenseCategoryContainer) expenseCategoryContainer.classList.add('hidden');
-                        if (wageFields) wageFields.classList.add('hidden');
-                        if (transWorkerName) transWorkerName.required = false;
-                    } else if (e.target.value === 'expense') {
-                        if (purchaseFields) purchaseFields.classList.add('hidden');
-                        if (itemNameInput) itemNameInput.required = false;
-                        if (itemUnitInput) itemUnitInput.required = false;
+                    if (e.target.value === 'expense') {
+                        if (incomeCategoryContainer) incomeCategoryContainer.classList.add('hidden');
+                        if (incomeGeneralFields) incomeGeneralFields.classList.add('hidden');
+                        if (incomeNameInput) incomeNameInput.required = false;
+                        if (saleFields) saleFields.classList.add('hidden');
+                        if (saleItemNameInput) saleItemNameInput.required = false;
+                        if (saleQuantityInput) saleQuantityInput.required = false;
+                        if (saleUnitInput) saleUnitInput.required = false;
+                        
                         if (expenseCategoryContainer) expenseCategoryContainer.classList.remove('hidden');
                         const checkedEx = document.querySelector('input[name="expenseCategory"]:checked');
                         if (checkedEx && checkedEx.value === 'wage') {
                             if (wageFields) wageFields.classList.remove('hidden');
                             if (transWorkerName) transWorkerName.required = true;
+                            if (purchaseFields) purchaseFields.classList.add('hidden');
+                            if (itemNameInput) itemNameInput.required = false;
+                            if (itemUnitInput) itemUnitInput.required = false;
+                            if (itemQuantityInput) itemQuantityInput.required = false;
+                            if (itemSupplierInput) itemSupplierInput.required = false;
+                        } else if (checkedEx && checkedEx.value === 'purchase') {
+                            if (purchaseFields) purchaseFields.classList.remove('hidden');
+                            if (itemNameInput) itemNameInput.required = true;
+                            if (itemUnitInput) itemUnitInput.required = true;
+                            if (itemQuantityInput) itemQuantityInput.required = true;
+                            if (itemSupplierInput) itemSupplierInput.required = true;
+                            if (wageFields) wageFields.classList.add('hidden');
+                            if (transWorkerName) transWorkerName.required = false;
                         } else {
                             if (wageFields) wageFields.classList.add('hidden');
                             if (transWorkerName) transWorkerName.required = false;
+                            if (purchaseFields) purchaseFields.classList.add('hidden');
+                            if (itemNameInput) itemNameInput.required = false;
+                            if (itemUnitInput) itemUnitInput.required = false;
+                            if (itemQuantityInput) itemQuantityInput.required = false;
+                            if (itemSupplierInput) itemSupplierInput.required = false;
                         }
                     } else {
-                        if (purchaseFields) purchaseFields.classList.add('hidden');
-                        if (itemNameInput) itemNameInput.required = false;
-                        if (itemUnitInput) itemUnitInput.required = false;
+                        if (incomeCategoryContainer) incomeCategoryContainer.classList.remove('hidden');
+                        const checkedInc = document.querySelector('input[name="incomeCategory"]:checked');
+                        if (checkedInc && checkedInc.value === 'sale') {
+                            if (saleFields) saleFields.classList.remove('hidden');
+                            if (saleItemNameInput) saleItemNameInput.required = true;
+                            if (saleQuantityInput) saleQuantityInput.required = true;
+                            if (saleUnitInput) saleUnitInput.required = true;
+                            if (incomeGeneralFields) incomeGeneralFields.classList.add('hidden');
+                            if (incomeNameInput) incomeNameInput.required = false;
+                        } else {
+                            if (incomeGeneralFields) incomeGeneralFields.classList.remove('hidden');
+                            if (incomeNameInput) incomeNameInput.required = true;
+                            if (saleFields) saleFields.classList.add('hidden');
+                            if (saleItemNameInput) saleItemNameInput.required = false;
+                            if (saleQuantityInput) saleQuantityInput.required = false;
+                            if (saleUnitInput) saleUnitInput.required = false;
+                        }
+                        
                         if (expenseCategoryContainer) expenseCategoryContainer.classList.add('hidden');
                         if (wageFields) wageFields.classList.add('hidden');
                         if (transWorkerName) transWorkerName.required = false;
+                        if (purchaseFields) purchaseFields.classList.add('hidden');
+                        if (itemNameInput) itemNameInput.required = false;
+                        if (itemUnitInput) itemUnitInput.required = false;
+                        if (itemQuantityInput) itemQuantityInput.required = false;
+                        if (itemSupplierInput) itemSupplierInput.required = false;
                     }
                 });
             });
@@ -173,30 +342,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('transWallet').value = transData.walletId || (wallets[0] ? wallets[0].id : '');
                 document.querySelector(`input[name="type"][value="${transData.type}"]`).checked = true;
                 
-                if (purchaseFields) {
-                    if (transData.type === 'purchase') {
-                        purchaseFields.classList.remove('hidden');
-                        if(itemNameInput) {
-                            itemNameInput.value = transData.itemName || '';
-                            itemNameInput.required = true;
-                        }
-                        if(itemUnitInput) {
-                            itemUnitInput.value = transData.itemUnit || '';
-                            itemUnitInput.required = true;
-                        }
-                    } else {
-                        purchaseFields.classList.add('hidden');
-                        if(itemNameInput) {
-                            itemNameInput.value = '';
-                            itemNameInput.required = false;
-                        }
-                        if(itemUnitInput) {
-                            itemUnitInput.value = '';
-                            itemUnitInput.required = false;
-                        }
-                    }
-                }
-                
                 if (expenseCategoryContainer) {
                     if (transData.type === 'expense') {
                         expenseCategoryContainer.classList.remove('hidden');
@@ -214,14 +359,60 @@ document.addEventListener('DOMContentLoaded', () => {
                                 transWorkerName.value = transData.workerName || '';
                                 transWorkerName.required = true;
                             }
+                            if (purchaseFields) purchaseFields.classList.add('hidden');
+                            if (itemNameInput) { itemNameInput.value = ''; itemNameInput.required = false; }
+                            if (itemUnitInput) { itemUnitInput.value = ''; itemUnitInput.required = false; }
+                            if (itemQuantityInput) { itemQuantityInput.value = ''; itemQuantityInput.required = false; }
+                            if (itemSupplierInput) { itemSupplierInput.value = ''; itemSupplierInput.required = false; }
+                        } else if (cat === 'purchase') {
+                            if (purchaseFields) purchaseFields.classList.remove('hidden');
+                            if (itemNameInput) { itemNameInput.value = transData.itemName || ''; itemNameInput.required = true; }
+                            if (itemUnitInput) { itemUnitInput.value = transData.itemUnit || ''; itemUnitInput.required = true; }
+                            if (itemQuantityInput) { itemQuantityInput.value = transData.itemQuantity || ''; itemQuantityInput.required = true; }
+                            if (itemSupplierInput) { itemSupplierInput.value = transData.itemSupplier || ''; itemSupplierInput.required = true; }
+                            if (wageFields) wageFields.classList.add('hidden');
+                            if (transWorkerName) transWorkerName.required = false;
                         } else {
                             if (wageFields) wageFields.classList.add('hidden');
                             if (transWorkerName) transWorkerName.required = false;
+                            if (purchaseFields) purchaseFields.classList.add('hidden');
+                            if (itemNameInput) { itemNameInput.value = ''; itemNameInput.required = false; }
+                            if (itemUnitInput) { itemUnitInput.value = ''; itemUnitInput.required = false; }
+                            if (itemQuantityInput) { itemQuantityInput.value = ''; itemQuantityInput.required = false; }
+                            if (itemSupplierInput) { itemSupplierInput.value = ''; itemSupplierInput.required = false; }
                         }
                     } else {
+                        if (incomeCategoryContainer) incomeCategoryContainer.classList.remove('hidden');
+                        const incCat = transData.incomeCategory || 'general';
+                        const incRadio = document.querySelector(`input[name="incomeCategory"][value="${incCat}"]`);
+                        if (incRadio) incRadio.checked = true;
+
+                        if (incCat === 'sale') {
+                            if (saleFields) saleFields.classList.remove('hidden');
+                            if (saleItemNameInput) { saleItemNameInput.value = transData.saleItemName || ''; saleItemNameInput.required = true; }
+                            if (saleQuantityInput) { saleQuantityInput.value = transData.saleQuantity || ''; saleQuantityInput.required = true; }
+                            if (saleUnitInput) { saleUnitInput.value = transData.saleUnit || ''; saleUnitInput.required = true; }
+                            if (saleBuyerInput) { saleBuyerInput.value = transData.saleBuyer || ''; saleBuyerInput.required = false; }
+                            if (incomeGeneralFields) incomeGeneralFields.classList.add('hidden');
+                            if (incomeNameInput) { incomeNameInput.value = ''; incomeNameInput.required = false; }
+                        } else {
+                            if (incomeGeneralFields) incomeGeneralFields.classList.remove('hidden');
+                            if (incomeNameInput) { incomeNameInput.value = transData.incomeName || ''; incomeNameInput.required = true; }
+                            if (saleFields) saleFields.classList.add('hidden');
+                            if (saleItemNameInput) { saleItemNameInput.value = ''; saleItemNameInput.required = false; }
+                            if (saleQuantityInput) { saleQuantityInput.value = ''; saleQuantityInput.required = false; }
+                            if (saleUnitInput) { saleUnitInput.value = ''; saleUnitInput.required = false; }
+                            if (saleBuyerInput) { saleBuyerInput.value = ''; saleBuyerInput.required = false; }
+                        }
+                        
                         expenseCategoryContainer.classList.add('hidden');
                         if (wageFields) wageFields.classList.add('hidden');
                         if (transWorkerName) transWorkerName.required = false;
+                        if (purchaseFields) purchaseFields.classList.add('hidden');
+                        if (itemNameInput) { itemNameInput.value = ''; itemNameInput.required = false; }
+                        if (itemUnitInput) { itemUnitInput.value = ''; itemUnitInput.required = false; }
+                        if (itemQuantityInput) { itemQuantityInput.value = ''; itemQuantityInput.required = false; }
+                        if (itemSupplierInput) { itemSupplierInput.value = ''; itemSupplierInput.required = false; }
                     }
                 }
                 
@@ -233,6 +424,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('transDate').value = new Date().toISOString().split('T')[0];
                 if(wallets[0]) document.getElementById('transWallet').value = wallets[0].id;
                 
+                if (incomeCategoryContainer) {
+                    incomeCategoryContainer.classList.add('hidden');
+                    const genIncRadio = document.querySelector('input[name="incomeCategory"][value="general"]');
+                    if (genIncRadio) genIncRadio.checked = true;
+                    if (incomeGeneralFields) incomeGeneralFields.classList.add('hidden');
+                    if (incomeNameInput) { incomeNameInput.value = ''; incomeNameInput.required = false; }
+                    if (saleFields) saleFields.classList.add('hidden');
+                    if (saleItemNameInput) { saleItemNameInput.value = ''; saleItemNameInput.required = false; }
+                    if (saleQuantityInput) { saleQuantityInput.value = ''; saleQuantityInput.required = false; }
+                    if (saleUnitInput) { saleUnitInput.value = ''; saleUnitInput.required = false; }
+                    if (saleBuyerInput) { saleBuyerInput.value = ''; saleBuyerInput.required = false; }
+
+                    const activeType = document.querySelector('input[name="type"]:checked')?.value;
+                    if (activeType === 'income') {
+                        incomeCategoryContainer.classList.remove('hidden');
+                        if (incomeGeneralFields) incomeGeneralFields.classList.remove('hidden');
+                        if (incomeNameInput) incomeNameInput.required = true;
+                    }
+                }
+                
                 if (purchaseFields) {
                     purchaseFields.classList.add('hidden');
                     if(itemNameInput) {
@@ -242,6 +453,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     if(itemUnitInput) {
                         itemUnitInput.value = '';
                         itemUnitInput.required = false;
+                    }
+                    if(itemQuantityInput) {
+                        itemQuantityInput.value = '';
+                        itemQuantityInput.required = false;
+                    }
+                    if(itemSupplierInput) {
+                        itemSupplierInput.value = '';
+                        itemSupplierInput.required = false;
                     }
                 }
                 
@@ -294,12 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 date: document.getElementById('transDate').value
             };
             
-            if (type === 'purchase') {
-                const trName = document.getElementById('transItemName');
-                const trUnit = document.getElementById('transItemUnit');
-                if(trName) data.itemName = trName.value;
-                if(trUnit) data.itemUnit = trUnit.value;
-            } else if (type === 'expense') {
+            if (type === 'expense') {
                 const exCatRadios = document.querySelector('input[name="expenseCategory"]:checked');
                 if (exCatRadios) {
                     data.expenseCategory = exCatRadios.value;
@@ -308,10 +522,36 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (wTypeRadios) data.wageType = wTypeRadios.value;
                         const wName = document.getElementById('transWorkerName');
                         if (wName) data.workerName = wName.value;
+                    } else if (exCatRadios.value === 'purchase') {
+                        const trName = document.getElementById('transItemName');
+                        const trUnit = document.getElementById('transItemUnit');
+                        const trQty = document.getElementById('transItemQuantity');
+                        const trSupplier = document.getElementById('transItemSupplier');
+                        if(trName) data.itemName = trName.value;
+                        if(trUnit) data.itemUnit = trUnit.value;
+                        if(trQty) data.itemQuantity = trQty.value;
+                        if(trSupplier) data.itemSupplier = trSupplier.value;
+                    }
+                }
+            } else if (type === 'income') {
+                const inCatRadios = document.querySelector('input[name="incomeCategory"]:checked');
+                if (inCatRadios) {
+                    data.incomeCategory = inCatRadios.value;
+                    if (inCatRadios.value === 'general') {
+                        const trIncomeName = document.getElementById('transIncomeName');
+                        if (trIncomeName) data.incomeName = trIncomeName.value;
+                    } else if (inCatRadios.value === 'sale') {
+                        const trSaleItemName = document.getElementById('saleItemName');
+                        const trSaleQuantity = document.getElementById('saleQuantity');
+                        const trSaleUnit = document.getElementById('saleUnit');
+                        const trSaleBuyer = document.getElementById('saleBuyer');
+                        if (trSaleItemName) data.saleItemName = trSaleItemName.value;
+                        if (trSaleQuantity) data.saleQuantity = trSaleQuantity.value;
+                        if (trSaleUnit) data.saleUnit = trSaleUnit.value;
+                        if (trSaleBuyer) data.saleBuyer = trSaleBuyer.value;
                     }
                 }
             }
-
             if (id) {
                 Store.updateTransaction(id, data);
             } else {

@@ -30,7 +30,7 @@
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body id="mainBody" class="bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-gray-100 font-sans antialiased min-h-screen pl-20 md:pl-64 transition-all duration-300">
+<body id="mainBody" class="bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-gray-100 font-sans antialiased min-h-screen pb-20 md:pb-24 transition-all duration-300">
     <header class="pt-8 pb-4 px-6 bg-white dark:bg-dark-card shadow-sm sticky top-0 z-30 transition-colors">
         <div class="flex justify-between items-center mb-0">
             <div class="flex items-center gap-3">
@@ -48,7 +48,7 @@
 
     <main class="px-5 py-6 space-y-6" id="analyticsContainer">
         <!-- Summary Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="bg-white dark:bg-dark-card p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-dark-border">
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Total Pemasukan</p>
                 <p class="text-lg md:text-xl font-bold text-blue-600 dark:text-blue-400" id="statIncome">Rp 0</p>
@@ -56,10 +56,6 @@
             <div class="bg-white dark:bg-dark-card p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-dark-border">
                 <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Total Pengeluaran</p>
                 <p class="text-lg md:text-xl font-bold text-red-600 dark:text-red-400" id="statExpense">Rp 0</p>
-            </div>
-            <div class="bg-white dark:bg-dark-card p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-dark-border">
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Total Pembelian</p>
-                <p class="text-lg md:text-xl font-bold text-amber-600 dark:text-amber-400" id="statPurchase">Rp 0</p>
             </div>
             <div class="bg-white dark:bg-dark-card p-4 rounded-2xl shadow-sm border border-agri-200 dark:border-agri-900/50 bg-agri-50 dark:bg-agri-900/10">
                 <p class="text-xs font-medium text-agri-700 dark:text-agri-400 mb-1">Net Profit / Saldo</p>
@@ -94,51 +90,34 @@
         </div>
     </main>
 
-    <!-- Left Navigation Sidebar -->
-    <nav id="sidebar" class="fixed top-0 left-0 bottom-0 w-20 md:w-64 bg-white dark:bg-dark-card border-r border-gray-100 dark:border-dark-border py-8 px-2 md:px-4 flex flex-col items-center md:items-start z-30 transition-all duration-300">
-        <!-- Logo Desktop -->
-        <div id="logoDesktop" class="hidden md:flex items-center gap-3 px-4 mb-10 w-full text-agri-600 dark:text-agri-400">
-            <div class="w-10 h-10 rounded-xl bg-agri-100 dark:bg-agri-900/30 flex items-center justify-center">
-                <i class="ph-fill ph-plant text-2xl"></i>
-            </div>
-            <span class="text-xl font-bold tracking-tight">AgriTrack</span>
-        </div>
-        <!-- Logo Mobile -->
-        <div id="logoMobile" class="md:hidden flex items-center justify-center mb-8 w-full text-agri-600 dark:text-agri-400">
-            <div class="w-12 h-12 rounded-xl bg-agri-100 dark:bg-agri-900/30 flex items-center justify-center">
-                <i class="ph-fill ph-plant text-3xl"></i>
-            </div>
-        </div>
-        
-        <div class="flex flex-col gap-3 w-full">
-            <a href="../index.html" class="sidebar-link flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 w-full p-2 md:px-4 md:py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-border/50 hover:text-agri-600 dark:hover:text-agri-400 transition-all font-bold group">
-                <i class="ph ph-house text-2xl md:text-xl shrink-0 group-hover:drop-shadow-sm"></i>
-                <span class="text-[10px] md:text-sm">Beranda</span>
-            </a>
-            <a href="dashboard.html" class="sidebar-link flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 w-full p-2 md:px-4 md:py-3 rounded-xl bg-agri-50 dark:bg-agri-900/20 text-agri-600 dark:text-agri-400 transition-all font-bold group">
-                <i class="ph-fill ph-chart-pie-slice text-2xl md:text-xl shrink-0"></i>
-                <span class="text-[10px] md:text-sm">Analitik</span>
-            </a>
-            <a href="transactions.html" class="sidebar-link flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 w-full p-2 md:px-4 md:py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-border/50 hover:text-agri-600 dark:hover:text-agri-400 transition-all font-bold group">
-                <i class="ph ph-swap text-2xl md:text-xl shrink-0 group-hover:drop-shadow-sm"></i>
-                <span class="text-[10px] md:text-sm">Transaksi</span>
-            </a>
-            <a href="notes.html" class="sidebar-link flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 w-full p-2 md:px-4 md:py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-border/50 hover:text-agri-600 dark:hover:text-agri-400 transition-all font-bold group">
-                <i class="ph ph-notebook text-2xl md:text-xl shrink-0 group-hover:drop-shadow-sm"></i>
-                <span class="text-[10px] md:text-sm">Catatan</span>
-            </a>
-            <a href="wallet.html" class="sidebar-link flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 w-full p-2 md:px-4 md:py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-border/50 hover:text-agri-600 dark:hover:text-agri-400 transition-all font-bold group">
-                <i class="ph-fill ph-wallet text-2xl md:text-xl shrink-0 group-hover:drop-shadow-sm"></i>
-                <span class="text-[10px] md:text-sm">Dompet</span>
-            </a>
-        </div>
-        
-        <!-- Sidebar Toggle -->
-        <div class="mt-auto w-full pt-4 border-t border-gray-100 dark:border-dark-border hidden md:flex">
-            <button id="sidebarToggle" class="w-full flex items-center justify-center p-3 rounded-xl text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-border/50 hover:text-agri-600 dark:hover:text-agri-400 transition-colors">
-                <i class="ph ph-caret-left text-xl transition-transform duration-300" id="sidebarToggleIcon"></i>
-            </button>
-        </div>
+    <!-- Bottom Navigation Bar -->
+    <nav id="bottomNav"
+        class="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-card border-t border-gray-200 dark:border-dark-border px-2 sm:px-6 py-2 sm:py-3 flex justify-around items-center z-50 transition-all duration-300 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
+        <a href="../index.html"
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
+            <i class="ph ph-house text-2xl sm:text-3xl"></i>
+            <span class="text-[10px] sm:text-xs">Beranda</span>
+        </a>
+        <a href="dashboard.html"
+            class="flex flex-col items-center gap-1 text-agri-600 dark:text-agri-400 font-bold transition-all">
+            <i class="ph-fill ph-chart-pie-slice text-2xl sm:text-3xl"></i>
+            <span class="text-[10px] sm:text-xs">Analitik</span>
+        </a>
+        <a href="transactions.html"
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
+            <i class="ph ph-swap text-2xl sm:text-3xl"></i>
+            <span class="text-[10px] sm:text-xs">Transaksi</span>
+        </a>
+        <a href="notes.html"
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
+            <i class="ph ph-notebook text-2xl sm:text-3xl"></i>
+            <span class="text-[10px] sm:text-xs">Catatan</span>
+        </a>
+        <a href="wallet.html"
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
+            <i class="ph ph-wallet text-2xl sm:text-3xl"></i>
+            <span class="text-[10px] sm:text-xs">Dompet</span>
+        </a>
     </nav>
 
     <!-- JS -->
@@ -174,18 +153,16 @@
             const wallets = Store.getWallets();
 
             // Populate Stats natively
-            let inc = 0, exp = 0, pur = 0;
+            let inc = 0, exp = 0;
             transactions.forEach(t => {
                 const a = parseFloat(t.amount);
                 if(t.type==='income') inc += a;
                 if(t.type==='expense') exp += a;
-                if(t.type==='purchase') pur += a;
             });
             const fmt = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0}).format(num);
             document.getElementById('statIncome').textContent = fmt(inc);
             document.getElementById('statExpense').textContent = fmt(exp);
-            document.getElementById('statPurchase').textContent = fmt(pur);
-            document.getElementById('statNet').textContent = fmt(inc - exp - pur);
+            document.getElementById('statNet').textContent = fmt(inc - exp);
 
             // Prepare Chart Data
             // Grid lines color based on theme
@@ -194,11 +171,11 @@
             new Chart(document.getElementById('cashflowChart'), {
                 type: 'bar',
                 data: {
-                    labels: ['Pemasukan', 'Pengeluaran', 'Pembelian Aset'],
+                    labels: ['Pemasukan', 'Pengeluaran'],
                     datasets: [{
                         label: 'Total Rupiah',
-                        data: [inc, exp, pur],
-                        backgroundColor: ['#3b82f6', '#ef4444', '#f59e0b'],
+                        data: [inc, exp],
+                        backgroundColor: ['#3b82f6', '#ef4444'],
                         borderRadius: 6,
                         barPercentage: 0.5
                     }]
@@ -220,15 +197,15 @@
             });
 
             // Category Chart (Doughnut)
-            let catData = [inc, exp, pur];
-            if(inc === 0 && exp === 0 && pur === 0) catData = [1, 1, 1]; // fallback empty
+            let catData = [inc, exp];
+            if(inc === 0 && exp === 0) catData = [1, 1]; // fallback empty
             new Chart(document.getElementById('categoryChart'), {
                 type: 'doughnut',
                 data: {
-                    labels: ['Pemasukan', 'Pengeluaran', 'Pembelian'],
+                    labels: ['Pemasukan', 'Pengeluaran'],
                     datasets: [{
                         data: catData,
-                        backgroundColor: ['#3b82f6', '#ef4444', '#f59e0b'],
+                        backgroundColor: ['#3b82f6', '#ef4444'],
                         borderWidth: 0,
                     }]
                 },

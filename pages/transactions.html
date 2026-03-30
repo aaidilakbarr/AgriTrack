@@ -39,7 +39,7 @@
 </head>
 
 <body id="mainBody"
-    class="bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-gray-100 font-sans antialiased min-h-screen pl-20 md:pl-64 transition-all duration-300">
+    class="bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-gray-100 font-sans antialiased min-h-screen pb-20 md:pb-24 transition-all duration-300">
 
     <header class="pt-8 pb-4 px-6 bg-white dark:bg-dark-card shadow-sm sticky top-0 z-30 transition-colors">
         <div class="flex justify-between items-center mb-4">
@@ -76,9 +76,6 @@
             <button
                 class="filter-btn px-4 py-2 rounded-full bg-white dark:bg-dark-card text-gray-500 dark:text-gray-400 text-sm font-medium whitespace-nowrap border border-gray-200 dark:border-dark-border transition-all"
                 data-filter="expense">Pengeluaran</button>
-            <button
-                class="filter-btn px-4 py-2 rounded-full bg-white dark:bg-dark-card text-gray-500 dark:text-gray-400 text-sm font-medium whitespace-nowrap border border-gray-200 dark:border-dark-border transition-all"
-                data-filter="purchase">Pembelian</button>
         </div>
     </header>
 
@@ -92,70 +89,44 @@
 
     <!-- FAB -->
     <button id="addTransactionBtn"
-        class="fixed bottom-8 right-6 md:right-10 w-14 h-14 bg-agri-600 text-white rounded-full shadow-lg shadow-agri-600/40 flex items-center justify-center hover:bg-agri-700 hover:scale-[1.05] active:scale-95 transition-all z-40">
+        class="fixed bottom-24 right-6 md:right-10 w-14 h-14 bg-agri-600 text-white rounded-full shadow-lg shadow-agri-600/40 flex items-center justify-center hover:bg-agri-700 hover:scale-[1.05] active:scale-95 transition-all z-40">
         <i class="ph ph-plus text-2xl font-bold"></i>
     </button>
 
-    <!-- Left Navigation Sidebar -->
-    <nav id="sidebar"
-        class="fixed top-0 left-0 bottom-0 w-20 md:w-64 bg-white dark:bg-dark-card border-r border-gray-100 dark:border-dark-border py-8 px-2 md:px-4 flex flex-col items-center md:items-start z-30 transition-all duration-300">
-        <!-- Logo Desktop -->
-        <div id="logoDesktop"
-            class="hidden md:flex items-center gap-3 px-4 mb-10 w-full text-agri-600 dark:text-agri-400">
-            <div class="w-10 h-10 rounded-xl bg-agri-100 dark:bg-agri-900/30 flex items-center justify-center">
-                <i class="ph-fill ph-plant text-2xl"></i>
-            </div>
-            <span class="text-xl font-bold tracking-tight">AgriTrack</span>
-        </div>
-        <!-- Logo Mobile -->
-        <div id="logoMobile"
-            class="md:hidden flex items-center justify-center mb-8 w-full text-agri-600 dark:text-agri-400">
-            <div class="w-12 h-12 rounded-xl bg-agri-100 dark:bg-agri-900/30 flex items-center justify-center">
-                <i class="ph-fill ph-plant text-3xl"></i>
-            </div>
-        </div>
-
-        <div class="flex flex-col gap-3 w-full">
-            <a href="../index.html"
-                class="sidebar-link flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 w-full p-2 md:px-4 md:py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-border/50 hover:text-agri-600 dark:hover:text-agri-400 transition-all font-bold group">
-                <i class="ph ph-house text-2xl md:text-xl shrink-0 group-hover:drop-shadow-sm"></i>
-                <span class="text-[10px] md:text-sm">Beranda</span>
-            </a>
-            <a href="dashboard.html"
-                class="sidebar-link flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 w-full p-2 md:px-4 md:py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-border/50 hover:text-agri-600 dark:hover:text-agri-400 transition-all font-bold group">
-                <i class="ph ph-chart-pie-slice text-2xl md:text-xl shrink-0 group-hover:drop-shadow-sm"></i>
-                <span class="text-[10px] md:text-sm">Analitik</span>
-            </a>
-            <a href="transactions.html"
-                class="sidebar-link flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 w-full p-2 md:px-4 md:py-3 rounded-xl bg-agri-50 dark:bg-agri-900/20 text-agri-600 dark:text-agri-400 transition-all font-bold">
-                <i class="ph-fill ph-swap text-2xl md:text-xl shrink-0"></i>
-                <span class="text-[10px] md:text-sm">Transaksi</span>
-            </a>
-            <a href="notes.html"
-                class="sidebar-link flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 w-full p-2 md:px-4 md:py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-border/50 hover:text-agri-600 dark:hover:text-agri-400 transition-all font-bold group">
-                <i class="ph ph-notebook text-2xl md:text-xl shrink-0 group-hover:drop-shadow-sm"></i>
-                <span class="text-[10px] md:text-sm">Catatan</span>
-            </a>
-            <a href="wallet.html"
-                class="sidebar-link flex flex-col md:flex-row items-center justify-center md:justify-start gap-1 md:gap-3 w-full p-2 md:px-4 md:py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-dark-border/50 hover:text-agri-600 dark:hover:text-agri-400 transition-all font-bold group">
-                <i class="ph ph-wallet text-2xl md:text-xl shrink-0 group-hover:drop-shadow-sm"></i>
-                <span class="text-[10px] md:text-sm">Dompet</span>
-            </a>
-        </div>
-
-        <!-- Sidebar Toggle -->
-        <div class="mt-auto w-full pt-4 border-t border-gray-100 dark:border-dark-border hidden md:flex">
-            <button id="sidebarToggle"
-                class="w-full flex items-center justify-center p-3 rounded-xl text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-border/50 hover:text-agri-600 dark:hover:text-agri-400 transition-colors">
-                <i class="ph ph-caret-left text-xl transition-transform duration-300" id="sidebarToggleIcon"></i>
-            </button>
-        </div>
+    <!-- Bottom Navigation Bar -->
+    <nav id="bottomNav"
+        class="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-card border-t border-gray-200 dark:border-dark-border px-2 sm:px-6 py-2 sm:py-3 flex justify-around items-center z-40 transition-all duration-300 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
+        <a href="../index.html"
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
+            <i class="ph ph-house text-2xl sm:text-3xl"></i>
+            <span class="text-[10px] sm:text-xs">Beranda</span>
+        </a>
+        <a href="dashboard.html"
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
+            <i class="ph ph-chart-pie-slice text-2xl sm:text-3xl"></i>
+            <span class="text-[10px] sm:text-xs">Analitik</span>
+        </a>
+        <a href="transactions.html"
+            class="flex flex-col items-center gap-1 text-agri-600 dark:text-agri-400 font-bold transition-all">
+            <i class="ph-fill ph-swap text-2xl sm:text-3xl"></i>
+            <span class="text-[10px] sm:text-xs">Transaksi</span>
+        </a>
+        <a href="notes.html"
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
+            <i class="ph ph-notebook text-2xl sm:text-3xl"></i>
+            <span class="text-[10px] sm:text-xs">Catatan</span>
+        </a>
+        <a href="wallet.html"
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
+            <i class="ph ph-wallet text-2xl sm:text-3xl"></i>
+            <span class="text-[10px] sm:text-xs">Dompet</span>
+        </a>
     </nav>
 
     <!-- Transaction Modal -->
     <div id="transactionModal"
         class="fixed inset-0 bg-gray-900/40 dark:bg-gray-950/70 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-end sm:items-center justify-center">
-        <div class="bg-white dark:bg-dark-card w-full sm:w-[400px] sm:rounded-3xl rounded-t-3xl p-6 transform translate-y-full sm:translate-y-10 transition-transform duration-300"
+        <div class="bg-white dark:bg-dark-card w-full sm:w-[400px] max-h-[85vh] overflow-y-auto hide-scrollbar scroll-smooth sm:rounded-3xl rounded-t-3xl p-6 transform translate-y-full sm:translate-y-10 transition-transform duration-300"
             id="transactionModalContent">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold" id="modalTitle">Tambah Transaksi</h3>
@@ -171,7 +142,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Jenis
                         Transaksi</label>
-                    <div class="grid grid-cols-3 gap-2">
+                    <div class="grid grid-cols-2 gap-2">
                         <label class="cursor-pointer">
                             <input type="radio" name="type" value="income" class="peer sr-only" required>
                             <div
@@ -184,27 +155,64 @@
                                 class="text-center py-2 px-1 rounded-xl border border-gray-200 dark:border-dark-border peer-checked:bg-red-100 peer-checked:border-red-500 peer-checked:text-red-700 dark:peer-checked:bg-red-900/30 dark:peer-checked:border-red-700 dark:peer-checked:text-red-400 text-sm font-bold transition-all">
                                 Pengeluaran</div>
                         </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="type" value="purchase" class="peer sr-only">
-                            <div
-                                class="text-center py-2 px-1 rounded-xl border border-gray-200 dark:border-dark-border peer-checked:bg-amber-100 peer-checked:border-amber-500 peer-checked:text-amber-700 dark:peer-checked:bg-amber-900/30 dark:peer-checked:border-amber-700 dark:peer-checked:text-amber-400 text-sm font-bold transition-all">
-                                Pembelian</div>
-                        </label>
                     </div>
-                </div>
+                <div id="incomeCategoryContainer" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Kategori
+                            Pemasukan</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="incomeCategory" value="general" class="peer sr-only" checked>
+                                <div
+                                    class="text-center py-2 px-1 rounded-xl border border-gray-200 dark:border-dark-border peer-checked:bg-blue-100 peer-checked:border-blue-500 peer-checked:text-blue-700 dark:peer-checked:bg-blue-900/30 dark:peer-checked:border-blue-700 dark:peer-checked:text-blue-400 text-sm font-bold transition-all">
+                                    Pemasukan Umum</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="incomeCategory" value="sale" class="peer sr-only">
+                                <div
+                                    class="text-center py-2 px-1 rounded-xl border border-gray-200 dark:border-dark-border peer-checked:bg-blue-100 peer-checked:border-blue-500 peer-checked:text-blue-700 dark:peer-checked:bg-blue-900/30 dark:peer-checked:border-blue-700 dark:peer-checked:text-blue-400 text-sm font-bold transition-all">
+                                    Penjualan</div>
+                            </label>
+                        </div>
+                    </div>
 
-                <div id="purchaseFields"
-                    class="hidden space-y-4 p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/30">
-                    <div>
-                        <label class="block text-sm font-medium text-amber-800 dark:text-amber-300 mb-1">Nama
-                            Item</label>
-                        <input type="text" id="transItemName" placeholder="Contoh: Bibit Jagung"
-                            class="w-full px-4 py-3 rounded-xl bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-amber-500 outline-none transition-shadow">
+                    <div id="incomeGeneralFields" class="space-y-4 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                        <div>
+                            <label class="block text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">Nama
+                                Pemasukan</label>
+                            <input type="text" id="transIncomeName" placeholder="Contoh: Hasil Panen / Jasa"
+                                class="w-full px-4 py-3 rounded-xl bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-blue-500 outline-none transition-shadow">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-amber-800 dark:text-amber-300 mb-1">Satuan</label>
-                        <input type="text" id="transItemUnit" placeholder="Contoh: Kg, Liter, Sak"
-                            class="w-full px-4 py-3 rounded-xl bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-amber-500 outline-none transition-shadow">
+
+                    <div id="saleFields" class="hidden space-y-4 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                        <div>
+                            <label class="block text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">Nama Barang Terjual</label>
+                            <input type="text" id="saleItemName" placeholder="Contoh: Kacang Tanah" class="w-full px-4 py-3 rounded-xl bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-blue-500 outline-none transition-shadow">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">Jumlah</label>
+                                <input type="number" id="saleQuantity" placeholder="Contoh: 50" min="0.01" step="0.01" class="w-full px-4 py-3 rounded-xl bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-blue-500 outline-none transition-shadow">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">Satuan</label>
+                                <select id="saleUnit" class="w-full px-4 py-3 rounded-xl bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-blue-500 outline-none transition-shadow appearance-none dark:[color-scheme:dark]">
+                                    <option value="" disabled selected>Pilih</option>
+                                    <option value="Kg">Kg</option>
+                                    <option value="Meter">Meter</option>
+                                    <option value="Liter">Liter</option>
+                                    <option value="Ton">Ton</option>
+                                    <option value="Sak">Sak</option>
+                                    <option value="Goni">Goni</option>
+                                    <option value="Pcs">Pcs</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">Pembeli</label>
+                            <input type="text" id="saleBuyer" placeholder="Nama Pihak Pembeli" class="w-full px-4 py-3 rounded-xl bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-blue-500 outline-none transition-shadow">
+                        </div>
                     </div>
                 </div>
 
@@ -212,18 +220,24 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Kategori
                             Pengeluaran</label>
-                        <div class="grid grid-cols-2 gap-2">
+                        <div class="grid grid-cols-3 gap-2">
                             <label class="cursor-pointer">
                                 <input type="radio" name="expenseCategory" value="general" class="peer sr-only" checked>
                                 <div
                                     class="text-center py-2 px-1 rounded-xl border border-gray-200 dark:border-dark-border peer-checked:bg-red-100 peer-checked:border-red-500 peer-checked:text-red-700 dark:peer-checked:bg-red-900/30 dark:peer-checked:border-red-700 dark:peer-checked:text-red-400 text-sm font-bold transition-all">
-                                    Pengeluaran Umum</div>
+                                    Pembelian Lain</div>
                             </label>
                             <label class="cursor-pointer">
                                 <input type="radio" name="expenseCategory" value="wage" class="peer sr-only">
                                 <div
                                     class="text-center py-2 px-1 rounded-xl border border-gray-200 dark:border-dark-border peer-checked:bg-red-100 peer-checked:border-red-500 peer-checked:text-red-700 dark:peer-checked:bg-red-900/30 dark:peer-checked:border-red-700 dark:peer-checked:text-red-400 text-sm font-bold transition-all">
                                     Upah Kerja</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="expenseCategory" value="purchase" class="peer sr-only">
+                                <div
+                                    class="text-center py-2 px-1 rounded-xl border border-gray-200 dark:border-dark-border peer-checked:bg-red-100 peer-checked:border-red-500 peer-checked:text-red-700 dark:peer-checked:bg-red-900/30 dark:peer-checked:border-red-700 dark:peer-checked:text-red-400 text-sm font-bold transition-all">
+                                    Pembelian</div>
                             </label>
                         </div>
                     </div>
@@ -255,6 +269,46 @@
                                 class="w-full px-4 py-3 rounded-xl bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-red-500 outline-none transition-shadow">
                         </div>
                     </div>
+
+                    <div id="purchaseFields"
+                        class="hidden space-y-4 p-4 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-100 dark:border-red-900/30">
+                        <div>
+                            <label class="block text-sm font-medium text-red-800 dark:text-red-300 mb-1">Nama
+                                Item</label>
+                            <input type="text" id="transItemName" placeholder="Contoh: Bibit Jagung"
+                                class="w-full px-4 py-3 rounded-xl bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-red-500 outline-none transition-shadow">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label
+                                    class="block text-sm font-medium text-red-800 dark:text-red-300 mb-1">Jumlah</label>
+                                <input type="number" id="transItemQuantity" placeholder="Contoh: 10" min="0.01"
+                                    step="0.01"
+                                    class="w-full px-4 py-3 rounded-xl bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-red-500 outline-none transition-shadow">
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-sm font-medium text-red-800 dark:text-red-300 mb-1">Satuan</label>
+                                <select id="transItemUnit"
+                                    class="w-full px-4 py-3 rounded-xl bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-red-500 outline-none transition-shadow appearance-none dark:[color-scheme:dark]">
+                                    <option value="" disabled selected>Pilih</option>
+                                    <option value="Kg">Kg</option>
+                                    <option value="Meter">Meter</option>
+                                    <option value="Liter">Liter</option>
+                                    <option value="Ton">Ton</option>
+                                    <option value="Sak">Sak</option>
+                                    <option value="Goni">Goni</option>
+                                    <option value="Pcs">Pcs</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-red-800 dark:text-red-300 mb-1">Asal
+                                Barang</label>
+                            <input type="text" id="transItemSupplier" placeholder="Nama Pihak Terkait"
+                                class="w-full px-4 py-3 rounded-xl bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-red-500 outline-none transition-shadow">
+                        </div>
+                    </div>
                 </div>
 
                 <div>
@@ -272,9 +326,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Keterangan /
-                        Catatan</label>
-                    <input type="text" id="transNote" required placeholder="Contoh: Beli Pupuk NPK"
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Keterangan</label>
+                    <input type="text" id="transNote" placeholder="Contoh: Beli Pupuk NPK"
                         class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-agri-500 outline-none transition-shadow">
                 </div>
 
