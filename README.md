@@ -1,106 +1,33 @@
 # 🌿 AgriTrack
 
-[![Framework](https://img.shields.io/badge/Framework-Tailwind_CSS_4.0-38bdf8?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com)
-[![Language](https://img.shields.io/badge/Language-JavaScript-f7df1e?style=for-the-badge&logo=javascript)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![Platform](https://img.shields.io/badge/Platform-Cordova-blue?style=for-the-badge&logo=apache-cordova)](https://cordova.apache.org)
+![AgriTrack Banner](www/assets/banner.png)
 
-**AgriTrack** adalah platform manajemen keuangan modern yang dirancang khusus untuk membantu petani mengelola arus kas, aset, dan catatan operasional mereka dengan antarmuka yang elegan dan intuitif. Kini siap dikonversi menjadi aplikasi Android melalui Apache Cordova.
+AgriTrack adalah aplikasi mobile pelacakan bisnis agrikultur yang dirancang untuk mempermudah pemantauan operasional dan manajerial secara praktis. Dibangun menggunakan Apache Cordova, aplikasi ini menyajikan antarmuka yang bersih, responsif, dan fungsional untuk mengelola manajemen keuangan dan catatan harian.
 
----
+## ✨ Fitur Utama
 
-## ✨ Tampilan Premium
+- **📊 Dashboard Interaktif**: Pantau ringkasan aktivitas, metrik bisnis kunci, dan navigasi cepat dalam satu layar utama.
+- **👛 Manajemen Dompet (Wallet)**: Kelola dan lacak arus kas serta saldo keuangan operasional dengan akurat.
+- **🔄 Riwayat Transaksi (Transactions)**: Monitor riwayat pemasukan dan pengeluaran bisnis secara *real-time*.
+- **📝 Pencatatan (Notes)**: Tulis dan kelola agenda penting, evaluasi, atau pengingat operasional sehari-hari.
 
-![AgriTrack Hero Banner](./www/assets/banner.png)
+## 🎨 Desain & Antarmuka
 
-> [!TIP]
-> AgriTrack menggunakan filosofi desain **Glassmorphism** dan **Modern Green Aesthetics** untuk memberikan pengalaman pengguna yang menyejukkan namun tetap profesional.
+Aplikasi ini dirancang dengan **pendekatan korporat (corporate approach)** yang menjadikan warna **hijau** sebagai elemen dan identitas utamanya. Filosofi warna hijau tidak hanya merepresentasikan sektor agrikultur, tetapi juga memberikan kesan profesionalisme yang solid untuk membangun kepercayaan pelanggan (*customer trust*)—sebuah aspek krusial dalam ekosistem bisnis B2C. 
 
----
-
-## 🚀 Fitur Utama
-
--   **📊 Dashboard Analitik**: Pantau saldo total, pemasukan, dan pengeluaran secara real-time dengan grafik yang cantik.
--   **💸 Manajemen Transaksi**: Catat setiap transaksi pertanian (pembelian pupuk, penjualan hasil panen) dengan mudah.
--   **📝 Catatan & Pengingat**: Simpan jadwal tanam, masa panen, atau catatan penting lainnya dalam satu tempat.
--   **👛 Dompet Multi-Aset**: Kelola berbagai dompet untuk memisahkan dana operasional dan dana pribadi.
--   **🌙 Mode Gelap/Terang**: Antarmuka adaptif yang nyaman dipandang baik di bawah terik matahari maupun di malam hari.
-
----
-
-## 📸 Cuplikan Antarmuka
-
-<div align="center">
-  <img src="./www/assets/mockup.png" alt="AgriTrack Dashboard Mockup" width="600" style="border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);" />
-</div>
-
----
-
-## 📱 Konversi ke APK (Android)
-
-Proyek ini telah dikonfigurasi menggunakan **Apache Cordova**. Ikuti langkah ini untuk membuat file APK:
-
-### 1. Persyaratan Sistem
-- **Node.js** & **NPM**
-- **Java JDK 11** atau lebih tinggi
-- **Android Studio** (dengan Android SDK & Build Tools)
-- **Gradle** terpasang di PATH
-
-### 2. Langkah-langkah Build
-1.  **Instal Cordova** (jika belum):
-    ```bash
-    npm install -g cordova
-    ```
-2.  **Tambah Platform Android**:
-    ```bash
-    cordova platform add android
-    ```
-3.  **Build APK**:
-    ```bash
-    cordova build android
-    ```
-4.  **Hasil Akhir**: File `.apk` akan tersedia di `platforms/android/app/build/outputs/apk/debug/`.
-
----
+Tata letaknya disusun agar terlihat modern, tidak terlalu ramai, dan dioptimalkan untuk memuat aset visual beresolusi tinggi (*hi-res*) guna memberikan pengalaman pengguna yang maksimal.
 
 ## 🛠️ Teknologi yang Digunakan
 
-| Komponen | Teknologi |
-| :-- | :-- |
-| **Mobile Framework** | Apache Cordova |
-| **Styling** | Tailwind CSS v4.0 & Custom CSS |
-| **Logic** | Vanilla JavaScript (ES6+) |
-| **Analytics** | Chart.js |
-| **Icons** | Phosphor Icons (Duotone) |
+- **Frontend**: HTML5, CSS3 (dibangun dengan Tailwind CSS), dan Vanilla JavaScript (`store.js`, `ui.js`, `app.js`).
+- **Mobile Framework**: Apache Cordova
+- **Platform Target**: Android
 
----
+## 🚀 Panduan Instalasi & Penggunaan
 
-## 📦 Jalankan Secara Lokal (Web)
+Pastikan lingkungan pengembangan Anda sudah siap, mencakup konfigurasi Android SDK (termasuk *cmdline-tools* yang tidak bermasalah) serta pengaturan versi Gradle yang sesuai untuk kelancaran *build* Cordova.
 
-Jika ingin menjalankan versi web untuk pengembangan di browser:
-
-1.  **Masuk ke Direktori**
-    ```bash
-    cd AgriTrack
-    ```
-2.  **Jalankan Server**
-    ```bash
-    npx serve www
-    ```
-
----
-
-## 🤝 Kontribusi
-
-Kami sangat terbuka untuk kontribusi! Jika Anda memiliki ide untuk meningkatkan fitur atau desain AgriTrack:
-
-1.  Fork proyek ini.
-2.  Buat branch fitur baru (`git checkout -b fitur/Hebat`).
-3.  Commit perubahan Anda (`git commit -m 'Menambahkan fitur Hebat'`).
-4.  Push ke branch tersebut (`git push origin fitur/Hebat`).
-
----
-
-<div align="center">
-  <p>Dibuat dengan ❤️ untuk kemajuan Pertanian Indonesia</p>
-  <a href="#main-header">Kembali ke Atas</a>
-</div>
+1. **Clone repositori ini**
+   ```bash
+   git clone [https://github.com/username/agritrack.git](https://github.com/username/agritrack.git)
+   cd agritrack
