@@ -35,106 +35,63 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        .premium-glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .premium-glass {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .grad-emerald {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+        .hover-lift { transition: transform 0.2s ease; }
+        .hover-lift:hover { transform: translateY(-2px); }
     </style>
 </head>
 
 <body id="mainBody"
     class="bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-gray-100 font-sans antialiased min-h-screen pb-20 md:pb-24 transition-all duration-300">
 
-    <header class="pt-8 pb-4 px-6 bg-white dark:bg-dark-card shadow-sm sticky top-0 z-30 transition-colors">
-        <div class="flex justify-between items-center mb-4">
+    <header class="pt-8 pb-4 px-6 bg-transparent relative z-30">
+        <div class="flex justify-between items-center mb-6 px-4 py-3 premium-glass rounded-2xl reveal">
             <div class="flex items-center gap-3">
-                <a href="../index.html"
-                    class="w-10 h-10 rounded-full bg-gray-100 dark:bg-dark-border flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-agri-100 transition-colors">
-                    <i class="ph ph-arrow-left text-xl"></i>
+                <a href="../index.html" class="w-10 h-10 rounded-xl bg-white/50 dark:bg-dark-border/50 backdrop-blur-md flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-agri-100 transition-all hover-lift">
+                    <i class="ph-duotone ph-arrow-left text-xl"></i>
                 </a>
-                <h1 class="text-xl font-bold">Daftar Transaksi</h1>
+                <h1 class="text-xl font-extrabold tracking-tight">Transaksi</h1>
             </div>
-            <button id="themeToggle"
-                class="w-10 h-10 rounded-full bg-gray-100 dark:bg-dark-border flex items-center justify-center text-gray-600 dark:text-gray-300">
-                <i class="ph ph-moon text-xl dark:hidden"></i>
-                <i class="ph ph-sun text-xl hidden dark:block"></i>
-            </button>
-        </div>
-
-        <!-- Search Bar & Calendar Button -->
-        <div class="flex gap-2 mb-4 items-start sm:items-center">
-            <div class="flex-1 relative">
-                <i
-                    class="ph ph-magnifying-glass absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
-                <input type="text" id="searchTransactionInput" placeholder="Cari transaksi (Nama, Catatan, Nominal)"
-                    class="w-full pl-11 pr-4 py-3 rounded-2xl bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-agri-500 outline-none transition-shadow text-sm">
-            </div>
-            <button id="openMonthPickerBtn"
-                class="shrink-0 p-3 rounded-2xl bg-white dark:bg-dark-card text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-dark-border hover:border-agri-600 hover:text-agri-600 dark:hover:text-agri-400 dark:hover:border-agri-400 transition-all"
-                title="Filter berdasarkan bulan">
-                <i class="ph ph-calendar text-lg"></i>
-            </button>
-        </div>
-
-        <!-- Month Display Badge -->
-        <div class="flex gap-2 overflow-x-auto hide-scrollbar pb-2 mb-2">
-            <div id="monthFilterBadge" class="hidden px-3 py-1 rounded-full bg-agri-100 dark:bg-agri-900/30 text-agri-600 dark:text-agri-400 text-xs font-bold flex items-center gap-2 whitespace-nowrap">
-                <i class="ph ph-calendar text-sm"></i>
-                <span id="monthFilterBadgeText"></span>
-                <button id="clearMonthFilterBtn" class="ml-1 hover:opacity-70 transition-opacity">
-                    <i class="ph ph-x text-sm"></i>
+            <div class="flex items-center gap-2">
+                <button onclick="UI.exportToCSV(window.currentFilteredTransactions || Store.getTransactions())" 
+                    title="Export CSV"
+                    class="w-10 h-10 rounded-xl bg-white/50 dark:bg-dark-border/50 backdrop-blur-md flex items-center justify-center text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 transition-all hover-lift">
+                    <i class="ph-duotone ph-export text-xl font-bold"></i>
+                </button>
+                <button id="themeToggle" class="w-10 h-10 rounded-xl bg-white/50 dark:bg-dark-border/50 backdrop-blur-md flex items-center justify-center text-gray-600 dark:text-gray-300 hover-lift">
+                    <i class="ph-duotone ph-moon text-xl dark:hidden"></i>
+                    <i class="ph-duotone ph-sun text-xl hidden dark:block"></i>
                 </button>
             </div>
         </div>
 
-        <!-- Filter Pills -->
-        <div class="flex gap-2 overflow-x-auto hide-scrollbar pb-2 pt-2" id="filterContainer">
-            <button
-                class="filter-btn active px-4 py-2 rounded-full bg-agri-600 text-white text-sm font-bold whitespace-nowrap shadow-md shadow-agri-600/30 border border-agri-600 transition-all"
-                data-filter="all">Semua</button>
-            <button
-                class="filter-btn px-4 py-2 rounded-full bg-white dark:bg-dark-card text-gray-500 dark:text-gray-400 text-sm font-medium whitespace-nowrap border border-gray-200 dark:border-dark-border transition-all"
-                data-filter="income">Pemasukan</button>
-            <button
-                class="filter-btn px-4 py-2 rounded-full bg-white dark:bg-dark-card text-gray-500 dark:text-gray-400 text-sm font-medium whitespace-nowrap border border-gray-200 dark:border-dark-border transition-all"
-                data-filter="expense">Pengeluaran</button>
-        </div>
-
-        <!-- Month Picker Modal -->
-        <div id="monthPickerModal" class="fixed inset-0 bg-gray-900/40 dark:bg-gray-950/70 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-end sm:items-center justify-center">
-            <div class="bg-white dark:bg-dark-card w-full sm:w-[420px] max-h-[85vh] overflow-y-auto hide-scrollbar sm:rounded-3xl rounded-t-3xl p-6 transform translate-y-full sm:translate-y-10 transition-transform duration-300"
-                id="monthPickerContent">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold">Pilih Bulan & Tahun</h3>
-                    <button id="closeMonthPickerBtn"
-                        class="w-8 h-8 rounded-full bg-gray-100 dark:bg-dark-border flex items-center justify-center text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex-shrink-0">
-                        <i class="ph ph-x text-xl"></i>
-                    </button>
-                </div>
-
-                <div class="mb-6">
-                    <!-- Year Navigation -->
-                    <div class="flex justify-between items-center mb-4 px-2">
-                        <button id="mpPrevYear" class="p-2 rounded-lg bg-gray-100 dark:bg-dark-border hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex-shrink-0">
-                            <i class="ph ph-caret-left text-lg"></i>
-                        </button>
-                        <span id="mpCurrentYear" class="text-lg font-bold">2024</span>
-                        <button id="mpNextYear" class="p-2 rounded-lg bg-gray-100 dark:bg-dark-border hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex-shrink-0">
-                            <i class="ph ph-caret-right text-lg"></i>
-                        </button>
+        <!-- Month Filter & Search -->
+        <div class="space-y-4 reveal" style="animation-delay: 0.1s">
+            <div class="flex items-center gap-3">
+                <button id="openMonthPicker" class="flex-1 premium-glass px-5 py-4 rounded-2xl flex items-center justify-between text-gray-700 dark:text-gray-200 hover-lift group">
+                    <div class="flex items-center gap-3">
+                        <i class="ph-duotone ph-calendar-blank text-2xl text-agri-600"></i>
+                        <span id="currentMonthLabel" class="font-extrabold tracking-tight">Semua Waktu</span>
                     </div>
-
-                    <!-- Months Grid -->
-                    <div id="mpMonthsGrid" class="grid grid-cols-3 gap-2 mb-6">
-                        <!-- Generated by JavaScript -->
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <button id="mpClearBtn" class="flex-1 py-3 rounded-xl bg-gray-100 dark:bg-dark-border text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                        Bersihkan Filter
-                    </button>
-                    <button id="mpApplyBtn" class="flex-1 py-3 rounded-xl bg-agri-600 text-white font-bold hover:bg-agri-700 shadow-md shadow-agri-600/30 transition-colors">
-                        Terapkan
-                    </button>
-                </div>
+                    <i class="ph ph-caret-down text-gray-400 transform group-active:rotate-180 transition-transform"></i>
+                </button>
+            </div>
+            <div class="relative">
+                <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl"></i>
+                <input type="text" id="searchTransactionInput" placeholder="Cari nota, barang, atau pembeli..." 
+                    class="w-full premium-glass pl-12 pr-4 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-agri-500/50 transition-all font-medium">
             </div>
         </div>
     </header>
@@ -149,37 +106,37 @@
 
     <!-- FAB -->
     <button id="addTransactionBtn"
-        class="fixed bottom-24 right-6 md:right-10 w-14 h-14 bg-agri-600 text-white rounded-full shadow-lg shadow-agri-600/40 flex items-center justify-center hover:bg-agri-700 hover:scale-[1.05] active:scale-95 transition-all z-40">
-        <i class="ph ph-plus text-2xl font-bold"></i>
+        class="fixed bottom-28 right-6 w-16 h-16 grad-emerald text-white rounded-[2rem] shadow-2xl shadow-agri-600/40 flex items-center justify-center z-40 transition-all hover:scale-110 active:scale-95 hover:rotate-90">
+        <i class="ph ph-plus text-3xl font-bold"></i>
     </button>
 
     <!-- Bottom Navigation Bar -->
     <nav id="bottomNav"
-        class="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-card border-t border-gray-200 dark:border-dark-border px-2 sm:px-6 py-2 sm:py-3 flex justify-around items-center z-40 transition-all duration-300 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
+        class="fixed bottom-6 left-6 right-6 premium-glass rounded-[2rem] px-4 py-4 flex justify-around items-center z-50 transition-all duration-300 shadow-2xl">
         <a href="../index.html"
-            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
-            <i class="ph ph-house text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Beranda</span>
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-house text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Beranda</span>
         </a>
         <a href="dashboard.html"
-            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
-            <i class="ph ph-chart-pie-slice text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Analitik</span>
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-chart-pie-slice text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Analitik</span>
         </a>
         <a href="transactions.html"
-            class="flex flex-col items-center gap-1 text-agri-600 dark:text-agri-400 font-bold transition-all">
-            <i class="ph-fill ph-swap text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Transaksi</span>
+            class="flex flex-col items-center gap-1 text-agri-600 dark:text-agri-400 font-bold transition-all transform scale-110">
+            <i class="ph-duotone ph-swap text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter font-bold">Transaksi</span>
         </a>
         <a href="notes.html"
-            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
-            <i class="ph ph-notebook text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Catatan</span>
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-notebook text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Catatan</span>
         </a>
         <a href="wallet.html"
-            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
-            <i class="ph ph-wallet text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Dompet</span>
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-wallet text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Dompet</span>
         </a>
     </nav>
 
@@ -253,7 +210,7 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="block text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">Jumlah</label>
-                                <input type="number" id="saleQuantity" placeholder="Contoh: 50" min="0.01" step="0.01" class="w-full px-4 py-3 rounded-xl bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-blue-500 outline-none transition-shadow">
+                                <input type="text" id="saleQuantity" placeholder="Contoh: 50" inputmode="numeric" class="w-full px-4 py-3 rounded-xl bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-blue-500 outline-none transition-shadow">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-blue-800 dark:text-blue-300 mb-1">Satuan</label>
@@ -342,8 +299,7 @@
                             <div>
                                 <label
                                     class="block text-sm font-medium text-red-800 dark:text-red-300 mb-1">Jumlah</label>
-                                <input type="number" id="transItemQuantity" placeholder="Contoh: 10" min="0.01"
-                                    step="0.01"
+                                <input type="text" id="transItemQuantity" placeholder="Contoh: 10" inputmode="numeric"
                                     class="w-full px-4 py-3 rounded-xl bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-red-500 outline-none transition-shadow">
                             </div>
                             <div>
@@ -381,7 +337,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Jumlah (Rp)</label>
-                    <input type="number" id="transAmount" required min="1"
+                    <input type="text" id="transAmount" required inputmode="numeric"
                         class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-agri-500 outline-none transition-shadow text-lg font-bold">
                 </div>
 

@@ -31,59 +31,73 @@
     </style>
 </head>
 <body id="mainBody" class="bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-gray-100 font-sans antialiased min-h-screen pb-20 md:pb-24 transition-all duration-300">
-    <header class="pt-8 pb-4 px-6 bg-white dark:bg-dark-card shadow-sm sticky top-0 z-30 transition-colors">
-        <div class="flex justify-between items-center mb-0">
+    <header class="pt-8 pb-4 px-6 bg-transparent relative z-30">
+        <div class="flex justify-between items-center mb-0 px-4 py-3 premium-glass rounded-2xl reveal">
             <div class="flex items-center gap-3">
-                <a href="../index.html" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-dark-border flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-agri-100 transition-colors">
-                    <i class="ph ph-arrow-left text-xl"></i>
+                <a href="../index.html" class="w-10 h-10 rounded-xl bg-white/50 dark:bg-dark-border/50 backdrop-blur-md flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-agri-100 transition-all hover-lift">
+                    <i class="ph-duotone ph-arrow-left text-xl"></i>
                 </a>
-                <h1 class="text-xl font-bold">Dashboard Analitik</h1>
+                <h1 class="text-xl font-extrabold tracking-tight">Analitik</h1>
             </div>
-            <button id="themeToggle" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-dark-border flex items-center justify-center text-gray-600 dark:text-gray-300">
-                <i class="ph ph-moon text-xl dark:hidden"></i>
-                <i class="ph ph-sun text-xl hidden dark:block"></i>
+            <button id="themeToggle" class="w-10 h-10 rounded-xl bg-white/50 dark:bg-dark-border/50 backdrop-blur-md flex items-center justify-center text-gray-600 dark:text-gray-300 hover-lift">
+                <i class="ph-duotone ph-moon text-xl dark:hidden"></i>
+                <i class="ph-duotone ph-sun text-xl hidden dark:block"></i>
             </button>
         </div>
     </header>
 
-    <main class="px-5 py-6 space-y-6" id="analyticsContainer">
+    <main class="px-5 py-6 space-y-8" id="analyticsContainer">
         <!-- Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-white dark:bg-dark-card p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-dark-border">
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Total Pemasukan</p>
-                <p class="text-lg md:text-xl font-bold text-blue-600 dark:text-blue-400" id="statIncome">Rp 0</p>
+            <div class="premium-glass p-5 rounded-[2rem] reveal hover-lift" style="animation-delay: 0.1s">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl grad-income text-white flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                        <i class="ph-duotone ph-trend-up text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Pemasukan</p>
+                        <p class="text-xl font-extrabold text-emerald-600 dark:text-emerald-400" id="statIncome">Rp 0</p>
+                    </div>
+                </div>
             </div>
-            <div class="bg-white dark:bg-dark-card p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-dark-border">
-                <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Total Pengeluaran</p>
-                <p class="text-lg md:text-xl font-bold text-red-600 dark:text-red-400" id="statExpense">Rp 0</p>
+            <div class="premium-glass p-5 rounded-[2rem] reveal hover-lift" style="animation-delay: 0.2s">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl grad-expense text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
+                        <i class="ph-duotone ph-trend-down text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Pengeluaran</p>
+                        <p class="text-xl font-extrabold text-orange-600 dark:text-orange-400" id="statExpense">Rp 0</p>
+                    </div>
+                </div>
             </div>
-            <div class="bg-white dark:bg-dark-card p-4 rounded-2xl shadow-sm border border-agri-200 dark:border-agri-900/50 bg-agri-50 dark:bg-agri-900/10">
-                <p class="text-xs font-medium text-agri-700 dark:text-agri-400 mb-1">Net Profit / Saldo</p>
-                <p class="text-lg md:text-xl font-bold text-agri-700 dark:text-agri-300" id="statNet">Rp 0</p>
+            <div class="grad-emerald p-6 rounded-[2rem] text-white shadow-xl shadow-agri-900/20 reveal hover-lift" style="animation-delay: 0.3s">
+                <p class="text-[10px] font-bold text-agri-100 uppercase tracking-widest mb-1 opacity-80">Net Profit / Saldo</p>
+                <p class="text-2xl font-extrabold" id="statNet">Rp 0</p>
             </div>
         </div>
 
-        <!-- Chart 1: Saldo & Arus Kas (Bar) -->
-        <div class="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border p-5 rounded-2xl shadow-sm">
-            <h3 class="text-lg font-bold mb-4 text-gray-800 dark:text-gray-100">Arus Kas (Pendapatan vs Pengeluaran)</h3>
-            <div class="h-64 w-full relative">
+        <!-- Chart 1: Arus Kas -->
+        <div class="premium-glass p-6 rounded-[2.5rem] reveal" style="animation-delay: 0.4s">
+            <h3 class="text-lg font-extrabold mb-6 tracking-tight">Arus Kas (Pendapatan vs Pengeluaran)</h3>
+            <div class="h-72 w-full relative">
                 <canvas id="cashflowChart"></canvas>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Chart 2: Distribusi Kategori (Doughnut) -->
-            <div class="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border p-5 rounded-2xl shadow-sm flex flex-col">
-                <h3 class="text-base font-bold mb-4 text-gray-800 dark:text-gray-100">Persentase Transaksi</h3>
-                <div class="flex-1 flex items-center justify-center min-h-[220px] relative">
+            <div class="premium-glass p-6 rounded-[2.5rem] flex flex-col reveal shadow-emerald-500/5" style="animation-delay: 0.5s">
+                <h3 class="text-base font-extrabold mb-6 tracking-tight">Persentase Transaksi</h3>
+                <div class="flex-1 flex items-center justify-center min-h-[250px] relative">
                     <canvas id="categoryChart"></canvas>
                 </div>
             </div>
 
             <!-- Chart 3: Distribusi Dompet (Doughnut) -->
-            <div class="bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border p-5 rounded-2xl shadow-sm flex flex-col">
-                <h3 class="text-base font-bold mb-4 text-gray-800 dark:text-gray-100">Penggunaan Dompet</h3>
-                <div class="flex-1 flex items-center justify-center min-h-[220px] relative">
+            <div class="premium-glass p-6 rounded-[2.5rem] flex flex-col reveal shadow-blue-500/5" style="animation-delay: 0.6s">
+                <h3 class="text-base font-extrabold mb-6 tracking-tight">Penggunaan Dompet</h3>
+                <div class="flex-1 flex items-center justify-center min-h-[250px] relative">
                     <canvas id="walletChart"></canvas>
                 </div>
             </div>
@@ -92,31 +106,31 @@
 
     <!-- Bottom Navigation Bar -->
     <nav id="bottomNav"
-        class="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-card border-t border-gray-200 dark:border-dark-border px-2 sm:px-6 py-2 sm:py-3 flex justify-around items-center z-50 transition-all duration-300 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
+        class="fixed bottom-6 left-6 right-6 premium-glass rounded-[2rem] px-4 py-4 flex justify-around items-center z-50 transition-all duration-300 shadow-2xl">
         <a href="../index.html"
-            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
-            <i class="ph ph-house text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Beranda</span>
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-house text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Beranda</span>
         </a>
         <a href="dashboard.html"
-            class="flex flex-col items-center gap-1 text-agri-600 dark:text-agri-400 font-bold transition-all">
-            <i class="ph-fill ph-chart-pie-slice text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Analitik</span>
+            class="flex flex-col items-center gap-1 text-agri-600 dark:text-agri-400 font-bold transition-all transform scale-110">
+            <i class="ph-duotone ph-chart-pie-slice text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter font-bold">Analitik</span>
         </a>
         <a href="transactions.html"
-            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
-            <i class="ph ph-swap text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Transaksi</span>
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-swap text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Transaksi</span>
         </a>
         <a href="notes.html"
-            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
-            <i class="ph ph-notebook text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Catatan</span>
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-notebook text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Catatan</span>
         </a>
         <a href="wallet.html"
-            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
-            <i class="ph ph-wallet text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Dompet</span>
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-wallet text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Dompet</span>
         </a>
     </nav>
 
@@ -175,9 +189,18 @@
                     datasets: [{
                         label: 'Total Rupiah',
                         data: [inc, exp],
-                        backgroundColor: ['#3b82f6', '#ef4444'],
-                        borderRadius: 6,
-                        barPercentage: 0.5
+                        backgroundColor: (context) => {
+                            const ctx = context.chart.ctx;
+                            const red = ctx.createLinearGradient(0, 0, 0, 400);
+                            red.addColorStop(0, '#f97316');
+                            red.addColorStop(1, '#c2410c');
+                            const blue = ctx.createLinearGradient(0, 0, 0, 400);
+                            blue.addColorStop(0, '#10b981');
+                            blue.addColorStop(1, '#047857');
+                            return [blue, red];
+                        },
+                        borderRadius: 12,
+                        barPercentage: 0.6
                     }]
                 },
                 options: {
@@ -205,8 +228,9 @@
                     labels: ['Pemasukan', 'Pengeluaran'],
                     datasets: [{
                         data: catData,
-                        backgroundColor: ['#3b82f6', '#ef4444'],
+                        backgroundColor: ['#10b981', '#f97316'],
                         borderWidth: 0,
+                        hoverOffset: 10
                     }]
                 },
                 options: {

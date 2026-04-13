@@ -27,20 +27,25 @@
     <style>
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .premium-glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .dark .premium-glass { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .grad-emerald { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); }
+        .hover-lift { transition: transform 0.2s ease; }
+        .hover-lift:hover { transform: translateY(-2px); }
     </style>
 </head>
 <body id="mainBody" class="bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-gray-100 font-sans antialiased min-h-screen pb-20 md:pb-24 transition-all duration-300">
-    <header class="pt-8 pb-4 px-6 bg-white dark:bg-dark-card shadow-sm sticky top-0 z-30 transition-colors">
-        <div class="flex justify-between items-center mb-0">
+    <header class="pt-8 pb-4 px-6 bg-transparent relative z-30">
+        <div class="flex justify-between items-center mb-6 px-4 py-3 premium-glass rounded-2xl reveal">
             <div class="flex items-center gap-3">
-                <a href="../index.html" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-dark-border flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-agri-100 transition-colors">
-                    <i class="ph ph-arrow-left text-xl"></i>
+                <a href="../index.html" class="w-10 h-10 rounded-xl bg-white/50 dark:bg-dark-border/50 backdrop-blur-md flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-agri-100 transition-all hover-lift">
+                    <i class="ph-duotone ph-arrow-left text-xl"></i>
                 </a>
-                <h1 class="text-xl font-bold">Dompet & Pembayaran</h1>
+                <h1 class="text-xl font-extrabold tracking-tight">Dompet</h1>
             </div>
-            <button id="themeToggle" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-dark-border flex items-center justify-center text-gray-600 dark:text-gray-300">
-                <i class="ph ph-moon text-xl dark:hidden"></i>
-                <i class="ph ph-sun text-xl hidden dark:block"></i>
+            <button id="themeToggle" class="w-10 h-10 rounded-xl bg-white/50 dark:bg-dark-border/50 backdrop-blur-md flex items-center justify-center text-gray-600 dark:text-gray-300 hover-lift">
+                <i class="ph-duotone ph-moon text-xl dark:hidden"></i>
+                <i class="ph-duotone ph-sun text-xl hidden dark:block"></i>
             </button>
         </div>
     </header>
@@ -50,38 +55,39 @@
         <div class="flex flex-col items-center justify-center py-16 text-gray-400 col-span-full"><i class="ph ph-spinner-gap animate-spin text-4xl mb-4"></i><p>Memuat Data...</p></div>
     </main>
 
-    <!-- FAB -->
-    <button id="addWalletBtn" class="fixed bottom-24 right-6 md:right-10 w-14 h-14 bg-agri-600 text-white rounded-full shadow-lg shadow-agri-600/40 flex items-center justify-center hover:bg-agri-700 hover:scale-[1.05] active:scale-95 transition-all z-40">
-        <i class="ph ph-plus text-2xl font-bold"></i>
+    <!-- Add Button -->
+    <button id="addWalletBtn"
+        class="fixed bottom-28 right-6 w-16 h-16 grad-emerald text-white rounded-[2rem] shadow-2xl shadow-agri-600/40 flex items-center justify-center z-40 transition-all hover:scale-110 active:scale-95 hover:rotate-90">
+        <i class="ph ph-plus text-3xl font-bold"></i>
     </button>
 
     <!-- Bottom Navigation Bar -->
     <nav id="bottomNav"
-        class="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-card border-t border-gray-200 dark:border-dark-border px-2 sm:px-6 py-2 sm:py-3 flex justify-around items-center z-40 transition-all duration-300 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
+        class="fixed bottom-6 left-6 right-6 premium-glass rounded-[2rem] px-4 py-4 flex justify-around items-center z-50 transition-all duration-300 shadow-2xl">
         <a href="../index.html"
-            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
-            <i class="ph ph-house text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Beranda</span>
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-house text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Beranda</span>
         </a>
         <a href="dashboard.html"
-            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
-            <i class="ph ph-chart-pie-slice text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Analitik</span>
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-chart-pie-slice text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Analitik</span>
         </a>
         <a href="transactions.html"
-            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
-            <i class="ph ph-swap text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Transaksi</span>
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-swap text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Transaksi</span>
         </a>
         <a href="notes.html"
-            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
-            <i class="ph ph-notebook text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Catatan</span>
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-notebook text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Catatan</span>
         </a>
         <a href="wallet.html"
-            class="flex flex-col items-center gap-1 text-agri-600 dark:text-agri-400 font-bold transition-all">
-            <i class="ph-fill ph-wallet text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Dompet</span>
+            class="flex flex-col items-center gap-1 text-agri-600 dark:text-agri-400 font-bold transition-all transform scale-110">
+            <i class="ph-duotone ph-wallet text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter font-bold">Dompet</span>
         </a>
     </nav>
 

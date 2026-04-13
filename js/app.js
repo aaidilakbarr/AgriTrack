@@ -98,6 +98,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const closeMp = () => {
                 monthPickerModal.classList.add('opacity-0');
                 monthPickerContent.classList.add('scale-95');
+                
+                // Show navbar when modal closed
+                const bottomNav = document.getElementById('bottomNav');
+                if (bottomNav) bottomNav.classList.remove('translate-y-full', 'opacity-0', 'pointer-events-none');
+                
                 setTimeout(() => monthPickerModal.classList.add('hidden'), 300);
             };
 
@@ -141,6 +146,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     monthPickerContent.classList.remove('scale-95', 'translate-y-full', 'sm:translate-y-10');
                 }, 10);
 
+                // Hide navbar when modal open
+                const bottomNav = document.getElementById('bottomNav');
+                if (bottomNav) bottomNav.classList.add('translate-y-full', 'opacity-0', 'pointer-events-none');
+
                 if (window.activeMonthFilter) {
                     activeYear = parseInt(window.activeMonthFilter.split('-')[0]);
                 } else {
@@ -179,6 +188,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Open month picker modal when button is clicked
             openMonthPickerBtn.addEventListener('click', window.openMonthPickerModal);
+
+            // Export Transactions handler
+            const exportBtn = document.getElementById('exportTransactionsBtn');
+            if (exportBtn) {
+                exportBtn.addEventListener('click', () => {
+                    const activeFilterBtn = document.querySelector('.filter-btn.bg-agri-600');
+                    const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.filter : 'all';
+                    
+                    const transactions = Store.getTransactions();
+                    let filtered = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+                    
+                    if (activeFilter !== 'all') {
+                        filtered = filtered.filter(t => t.type === activeFilter);
+                    }
+                    
+                    if (window.activeMonthFilter) {
+                        filtered = filtered.filter(t => {
+                            const transDate = new Date(t.date);
+                            const transMonth = `${transDate.getFullYear()}-${String(transDate.getMonth() + 1).padStart(2, '0')}`;
+                            return transMonth === window.activeMonthFilter;
+                        });
+                    }
+                    
+                    const searchInput = document.getElementById('searchTransactionInput');
+                    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+                    if (query) {
+                        filtered = filtered.filter(t => {
+                            const wName = Store.getWallets().find(w => w.id === t.walletId)?.name || 'Uang Tunai';
+                            const searchStr = `${t.note || ''} ${t.itemName || ''} ${t.itemSupplier || ''} ${t.workerName || ''} ${t.incomeName || ''} ${t.saleItemName || ''} ${t.saleBuyer || ''} ${t.amount || ''} ${wName}`.toLowerCase();
+                            return searchStr.includes(query);
+                        });
+                    }
+                    
+                    UI.exportToCSV(filtered);
+                });
+            }
 
             // Initialize badge display on page load
             updateMonthFilterBadge();
@@ -515,6 +560,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 deleteBtn.classList.add('hidden');
             }
+
+            // Apply formatting to amount and quantity fields upon opening
+            if (typeof UI.formatInput === 'function') {
+                const amountInput = document.getElementById('transAmount');
+                if(amountInput) amountInput.value = UI.formatInput(amountInput.value);
+                const sQty = document.getElementById('saleQuantity');
+                if(sQty) sQty.value = UI.formatInput(sQty.value);
+                const iQty = document.getElementById('transItemQuantity');
+                if(iQty) iQty.value = UI.formatInput(iQty.value);
+            }
         };
 
         const closeModal = () => {
@@ -544,7 +599,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = {
                 walletId: document.getElementById('transWallet').value,
                 type: type,
-                amount: document.getElementById('transAmount').value,
+                amount: UI.parseNumber(document.getElementById('transAmount').value),
                 note: document.getElementById('transNote').value,
                 date: document.getElementById('transDate').value
             };
@@ -565,7 +620,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const trSupplier = document.getElementById('transItemSupplier');
                         if(trName) data.itemName = trName.value;
                         if(trUnit) data.itemUnit = trUnit.value;
-                        if(trQty) data.itemQuantity = trQty.value;
+                        if(trQty) data.itemQuantity = UI.parseNumber(trQty.value);
                         if(trSupplier) data.itemSupplier = trSupplier.value;
                     }
                 }
@@ -582,7 +637,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const trSaleUnit = document.getElementById('saleUnit');
                         const trSaleBuyer = document.getElementById('saleBuyer');
                         if (trSaleItemName) data.saleItemName = trSaleItemName.value;
-                        if (trSaleQuantity) data.saleQuantity = trSaleQuantity.value;
+                        if (trSaleQuantity) data.saleQuantity = UI.parseNumber(trSaleQuantity.value);
                         if (trSaleUnit) data.saleUnit = trSaleUnit.value;
                         if (trSaleBuyer) data.saleBuyer = trSaleBuyer.value;
                     }
@@ -597,6 +652,26 @@ document.addEventListener('DOMContentLoaded', () => {
             closeModal();
             const activeFilter = document.querySelector('.filter-btn.bg-agri-600').dataset.filter;
             UI.renderAllTransactions(activeFilter);
+        });
+
+        // Add Input Formatters for Digit Separator
+        ['transAmount', 'saleQuantity', 'transItemQuantity'].forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('input', (e) => {
+                    // Save cursor position
+                    const cursor = e.target.selectionStart;
+                    const oldLen = e.target.value.length;
+                    
+                    const formatted = UI.formatInput(e.target.value);
+                    e.target.value = formatted;
+                    
+                    // Restore cursor position roughly
+                    const newLen = formatted.length;
+                    const pos = cursor + (newLen - oldLen);
+                    e.target.setSelectionRange(pos, pos);
+                });
+            }
         });
 
         const deleteConfirmModal = document.getElementById('deleteConfirmModal');

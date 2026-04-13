@@ -57,13 +57,16 @@
 <body id="mainBody"
     class="bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-gray-100 font-sans antialiased min-h-screen pb-20 md:pb-24 transition-all duration-300">
 
-    <!-- Header -->
-    <header class="pt-8 pb-6 px-6 bg-white dark:bg-dark-card rounded-b-3xl shadow-sm z-10 relative">
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Selamat Datang</p>
-                <h1 class="text-2xl font-bold bg-gradient-to-r from-agri-600 to-agri-400 bg-clip-text text-transparent">
-                    AgriTrack</h1>
+    <!-- Header Section -->
+    <header class="pt-10 pb-20 px-6 bg-gradient-to-b from-agri-50 to-transparent dark:from-agri-950/20 dark:to-transparent relative overflow-hidden">
+        <!-- Abstract Shapes for Background -->
+        <div class="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-agri-400 opacity-10 blur-3xl animate-float"></div>
+        <div class="absolute top-40 left-0 -ml-16 w-48 h-48 rounded-full bg-blue-400 opacity-10 blur-3xl animate-float" style="animation-delay: -2s"></div>
+
+        <div class="flex justify-between items-center mb-8 relative z-10">
+            <div class="reveal">
+                <p class="text-xs font-bold text-agri-600 dark:text-agri-400 tracking-widest uppercase mb-1">AgriTrack Dashboard</p>
+                <h1 class="text-3xl font-extrabold text-gray-900 dark:text-white">Halo, Petani! 👋</h1>
             </div>
             <button id="themeToggle"
                 class="w-10 h-10 rounded-full bg-gray-100 dark:bg-dark-border flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-agri-100 dark:hover:bg-agri-900/30 transition-colors">
@@ -73,14 +76,25 @@
         </div>
 
         <!-- Main Balance Card -->
-        <div
-            class="bg-gradient-to-br from-agri-600 to-agri-800 rounded-2xl p-6 text-white shadow-xl shadow-agri-600/20 relative overflow-hidden">
-            <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white opacity-10 blur-2xl"></div>
-            <p class="text-agri-100 text-sm font-medium mb-1">Total Saldo Keuangan</p>
-            <h2 class="text-3xl font-bold mb-4" id="totalBalance">Rp 0</h2>
+        <div class="reveal" style="animation-delay: 0.1s">
+            <div class="grad-emerald rounded-[2.5rem] p-8 text-white shadow-2xl shadow-agri-900/30 relative overflow-hidden group hover-lift">
+                <!-- Decorative elements inside card -->
+                <div class="absolute bottom-0 right-0 -mb-10 -mr-10 w-40 h-40 rounded-full bg-white/10 blur-2xl group-hover:scale-125 transition-transform duration-700"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-4 opacity-80">
+                        <i class="ph-duotone ph-wallet text-xl"></i>
+                        <p class="text-xs font-semibold tracking-wider uppercase">Saldo Total Transaksi</p>
+                    </div>
+                    <h2 class="text-4xl font-extrabold tracking-tight mb-6" id="totalBalance">Rp 0</h2>
 
-            <div class="flex items-center gap-2 text-sm text-agri-100">
-                <span class="flex items-center gap-1"><i class="ph ph-trend-up"></i> +0% bulan ini</span>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-md rounded-full text-xs font-medium border border-white/10">
+                            <span class="flex items-center gap-1"><i class="ph ph-trend-up"></i> +0% Bulan Ini</span>
+                        </div>
+                        <i class="ph-duotone ph-arrow-circle-right text-3xl opacity-40"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -88,28 +102,28 @@
     <!-- Content Area -->
     <main class="px-6 py-6 space-y-8">
         <!-- Summary Stats (Mini Cards) -->
-        <div class="grid grid-cols-2 gap-4">
-            <div
-                class="bg-white dark:bg-dark-card p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-dark-border">
-                <div class="flex items-center gap-3 mb-2">
-                    <div
-                        class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                        <i class="ph ph-arrow-down-left text-lg"></i>
+        <div class="grid grid-cols-2 gap-4 -mt-14 relative z-20">
+            <div class="premium-glass p-5 rounded-3xl reveal hover-lift" style="animation-delay: 0.2s">
+                <div class="flex flex-col gap-3">
+                    <div class="w-10 h-10 rounded-2xl grad-income text-white flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                        <i class="ph-duotone ph-arrow-down-left text-xl"></i>
                     </div>
-                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Pemasukan</p>
+                    <div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Pemasukan</p>
+                        <p class="text-lg font-extrabold text-emerald-600 dark:text-emerald-400 leading-none" id="totalIncome">Rp 0</p>
+                    </div>
                 </div>
-                <p class="text-lg font-bold" id="totalIncome">Rp 0</p>
             </div>
-            <div
-                class="bg-white dark:bg-dark-card p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-dark-border">
-                <div class="flex items-center gap-3 mb-2">
-                    <div
-                        class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 flex items-center justify-center">
-                        <i class="ph ph-arrow-up-right text-lg"></i>
+            <div class="premium-glass p-5 rounded-3xl reveal hover-lift" style="animation-delay: 0.3s">
+                <div class="flex flex-col gap-3">
+                    <div class="w-10 h-10 rounded-2xl grad-expense text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
+                        <i class="ph-duotone ph-arrow-up-right text-xl"></i>
                     </div>
-                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400">Pengeluaran</p>
+                    <div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Pengeluaran</p>
+                        <p class="text-lg font-extrabold text-orange-600 dark:text-orange-400 leading-none" id="totalExpense">Rp 0</p>
+                    </div>
                 </div>
-                <p class="text-lg font-bold" id="totalExpense">Rp 0</p>
             </div>
         </div>
 
@@ -149,31 +163,31 @@
 
     <!-- Bottom Navigation Bar -->
     <nav id="bottomNav"
-        class="fixed bottom-0 left-0 right-0 bg-white dark:bg-dark-card border-t border-gray-200 dark:border-dark-border px-2 sm:px-6 py-2 sm:py-3 flex justify-around items-center z-50 transition-all duration-300 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
+        class="fixed bottom-6 left-6 right-6 premium-glass rounded-[2rem] px-4 py-4 flex justify-around items-center z-50 transition-all duration-300 shadow-2xl">
         <a href="index.html"
-            class="flex flex-col items-center gap-1 text-agri-600 dark:text-agri-400 font-bold transition-all">
-            <i class="ph-fill ph-house text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Beranda</span>
+            class="flex flex-col items-center gap-1 text-agri-600 dark:text-agri-400 font-bold transition-all transform scale-110">
+            <i class="ph-duotone ph-house text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Beranda</span>
         </a>
         <a href="./pages/dashboard.html"
-            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
-            <i class="ph ph-chart-pie-slice text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Analitik</span>
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-chart-pie-slice text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Analitik</span>
         </a>
         <a href="./pages/transactions.html"
-            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
-            <i class="ph ph-swap text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Transaksi</span>
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-swap text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Transaksi</span>
         </a>
         <a href="./pages/notes.html"
-            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
-            <i class="ph ph-notebook text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Catatan</span>
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-notebook text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Catatan</span>
         </a>
         <a href="./pages/wallet.html"
-            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium hover:font-bold transition-all">
-            <i class="ph ph-wallet text-2xl sm:text-3xl"></i>
-            <span class="text-[10px] sm:text-xs">Dompet</span>
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-wallet text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Dompet</span>
         </a>
     </nav>
 
