@@ -4,8 +4,11 @@ const UI = {
     },
 
     formatDate(dateString) {
+        if (!dateString) return 'Tanggal -';
+        const d = new Date(dateString);
+        if (isNaN(d.getTime())) return 'Tanggal -';
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString('id-ID', options);
+        return d.toLocaleDateString('id-ID', options);
     },
 
     renderDashboardStats() {
@@ -100,6 +103,7 @@ const UI = {
 
     renderTransactionItem(t, wallets) {
         const getWalletName = (wId) => {
+            if (!wallets || !Array.isArray(wallets)) return '💵 Uang Tunai';
             const w = wallets.find(x => x.id === wId);
             return w ? `${w.category === 'cash' ? '💵' : '💳'} ${w.name}` : '💵 Uang Tunai';
         };
@@ -173,8 +177,8 @@ const UI = {
 
         el.innerHTML = `
             <div class="flex items-center gap-3 flex-1 min-w-0 pr-2">
-                <div class="w-12 h-12 rounded-2xl ${bgClass} flex items-center justify-center shrink-0">
-                    <i class="ph ${iconClass} text-2xl"></i>
+                <div class="w-12 h-12 rounded-2xl ${bgClass || 'bg-gray-100'} flex items-center justify-center shrink-0">
+                    <i class="ph ${iconClass || 'ph-question'} text-2xl"></i>
                 </div>
                 <div class="min-w-0 flex-1 flex flex-col justify-center">
                     ${titleHtml}
@@ -183,7 +187,7 @@ const UI = {
                 </div>
             </div>
             <div class="text-right shrink-0 ml-2 mt-1 self-start items-end flex flex-col">
-                <p class="text-sm border rounded-lg px-2 py-1 shadow-sm font-bold ${textClass} ${t.type === 'income' ? 'border-blue-200 bg-blue-50/50 dark:border-blue-900/50 dark:bg-blue-900/10' : 'border-red-200 bg-red-50/50 dark:border-red-900/50 dark:bg-red-900/10'}">${sign} ${this.formatCurrency(t.amount)}</p>
+                <p class="text-sm border rounded-lg px-2 py-1 shadow-sm font-bold ${textClass || 'text-gray-600'} ${t.type === 'income' ? 'border-blue-200 bg-blue-50/50 dark:border-blue-900/50 dark:bg-blue-900/10' : 'border-red-200 bg-red-50/50 dark:border-red-900/50 dark:bg-red-900/10'}">${sign || ''} ${this.formatCurrency(t.amount || 0)}</p>
             </div>
         `;
         return el;

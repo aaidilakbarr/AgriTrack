@@ -1,7 +1,12 @@
 const Store = {
     // ---- TRANSACTIONS ----
     getTransactions() {
-        return JSON.parse(localStorage.getItem('agri_transactions')) || [];
+        try {
+            return JSON.parse(localStorage.getItem('agri_transactions')) || [];
+        } catch (e) {
+            console.error('Error parsing transactions:', e);
+            return [];
+        }
     },
     saveTransactions(transactions) {
         localStorage.setItem('agri_transactions', JSON.stringify(transactions));
@@ -26,7 +31,12 @@ const Store = {
 
     // ---- NOTES ----
     getNotes() {
-        return JSON.parse(localStorage.getItem('agri_notes')) || [];
+        try {
+            return JSON.parse(localStorage.getItem('agri_notes')) || [];
+        } catch (e) {
+            console.error('Error parsing notes:', e);
+            return [];
+        }
     },
     saveNotes(notes) {
         localStorage.setItem('agri_notes', JSON.stringify(notes));

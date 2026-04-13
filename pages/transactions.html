@@ -56,6 +56,37 @@
 <body id="mainBody"
     class="bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-gray-100 font-sans antialiased min-h-screen pb-20 md:pb-24 transition-all duration-300">
 
+    <!-- Month Picker Modal -->
+    <div id="monthPickerModal"
+        class="fixed inset-0 bg-gray-900/40 dark:bg-gray-950/70 backdrop-blur-sm z-[100] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-dark-card w-full max-w-[340px] rounded-[2.5rem] p-6 shadow-2xl transform scale-95 transition-all duration-300"
+            id="monthPickerContent">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-black tracking-tight">Pilih Bulan</h3>
+                <button id="closeMonthPickerBtn"
+                    class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-dark-border flex items-center justify-center text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    <i class="ph ph-x text-xl font-bold"></i>
+                </button>
+            </div>
+
+            <div class="flex items-center justify-between mb-6 bg-gray-50 dark:bg-dark-bg p-2 rounded-2xl">
+                <button id="mpPrevYear" class="w-10 h-10 flex items-center justify-center text-agri-600 hover:bg-white dark:hover:bg-dark-border rounded-xl transition-all"><i class="ph ph-caret-left font-bold"></i></button>
+                <span id="mpCurrentYear" class="text-lg font-black tracking-widest text-gray-800 dark:text-white">2024</span>
+                <button id="mpNextYear" class="w-10 h-10 flex items-center justify-center text-agri-600 hover:bg-white dark:hover:bg-dark-border rounded-xl transition-all"><i class="ph ph-caret-right font-bold"></i></button>
+            </div>
+
+            <div id="mpMonthsGrid" class="grid grid-cols-3 gap-3">
+                <!-- Data will be injected here via JS -->
+            </div>
+
+            <div class="mt-8">
+                <button id="mpClearBtn" class="w-full py-4 rounded-2xl border-2 border-dashed border-gray-200 dark:border-dark-border text-gray-500 dark:text-gray-400 font-bold hover:bg-gray-50 dark:hover:bg-dark-bg transition-all">
+                    Reset Filter
+                </button>
+            </div>
+        </div>
+    </div>
+
     <header class="pt-8 pb-4 px-6 bg-transparent relative z-30">
         <div class="flex justify-between items-center mb-6 px-4 py-3 premium-glass rounded-2xl reveal">
             <div class="flex items-center gap-3">
@@ -80,10 +111,10 @@
         <!-- Month Filter & Search -->
         <div class="space-y-4 reveal" style="animation-delay: 0.1s">
             <div class="flex items-center gap-3">
-                <button id="openMonthPicker" class="flex-1 premium-glass px-5 py-4 rounded-2xl flex items-center justify-between text-gray-700 dark:text-gray-200 hover-lift group">
+                <button id="openMonthPickerBtn" onclick="if(window.openMonthPickerModal) window.openMonthPickerModal()" class="flex-1 premium-glass px-5 py-4 rounded-2xl flex items-center justify-between text-gray-700 dark:text-gray-200 hover-lift group">
                     <div class="flex items-center gap-3">
                         <i class="ph-duotone ph-calendar-blank text-2xl text-agri-600"></i>
-                        <span id="currentMonthLabel" class="font-extrabold tracking-tight">Semua Waktu</span>
+                        <span id="monthPickerBtnText" class="font-extrabold tracking-tight">Semua Waktu</span>
                     </div>
                     <i class="ph ph-caret-down text-gray-400 transform group-active:rotate-180 transition-transform"></i>
                 </button>
@@ -92,6 +123,22 @@
                 <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl"></i>
                 <input type="text" id="searchTransactionInput" placeholder="Cari nota, barang, atau pembeli..." 
                     class="w-full premium-glass pl-12 pr-4 py-4 rounded-2xl focus:outline-none focus:ring-2 focus:ring-agri-500/50 transition-all font-medium">
+            </div>
+
+            <!-- Month Filter Badge -->
+            <div id="monthFilterBadge" class="hidden flex items-center gap-2 bg-agri-100 dark:bg-agri-900/30 px-3 py-1.5 rounded-xl border border-agri-200 dark:border-agri-800 self-start">
+                <i class="ph ph-calendar text-agri-600 dark:text-agri-400"></i>
+                <span id="monthFilterBadgeText" class="text-xs font-bold text-agri-700 dark:text-agri-300"></span>
+                <button id="clearMonthFilterBtn" class="p-1 hover:bg-agri-200 dark:hover:bg-agri-800 rounded-lg transition-colors">
+                    <i class="ph ph-x-circle text-agri-600 dark:text-agri-400"></i>
+                </button>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="flex gap-2 overflow-x-auto hide-scrollbar py-2 reveal" style="animation-delay: 0.2s">
+                <button class="filter-btn shrink-0 px-6 py-3 rounded-2xl font-bold text-sm bg-agri-600 text-white shadow-md shadow-agri-600/30 transition-all border border-agri-600" data-filter="all">Semua</button>
+                <button class="filter-btn shrink-0 px-6 py-3 rounded-2xl font-bold text-sm bg-white dark:bg-dark-card text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-dark-border hover:border-agri-500 transition-all" data-filter="income">Pemasukan</button>
+                <button class="filter-btn shrink-0 px-6 py-3 rounded-2xl font-bold text-sm bg-white dark:bg-dark-card text-gray-500 dark:text-gray-400 border border-gray-100 dark:border-dark-border hover:border-agri-500 transition-all" data-filter="expense">Pengeluaran</button>
             </div>
         </div>
     </header>
@@ -384,9 +431,9 @@
                         class="flex-1 py-3 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 shadow-md shadow-red-600/30 transition-colors">Hapus</button>
                 </div>
             </div>
-        </div>
+    </div>
 
-        <script src="../js/store.js"></script>
+    <script src="../js/store.js"></script>
         <script src="../js/ui.js"></script>
         <script src="../js/app.js"></script>
 </body>

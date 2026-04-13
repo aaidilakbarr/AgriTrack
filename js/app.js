@@ -37,13 +37,33 @@ document.addEventListener('DOMContentLoaded', () => {
         if (_migrated) Store.saveTransactions(_tx);
     } catch(e) { }
 
+    // Initial Rendering with Safety Wrappers
+    const safeRender = (fnName, ...args) => {
+        try {
+            if (typeof UI[fnName] === 'function') {
+                UI[fnName](...args);
+                console.log(`Successfully rendered: ${fnName}`);
+            }
+        } catch (err) {
+            console.error(`Failed to render ${fnName}:`, err);
+        }
+    };
+
     // Initialize Dashboard UI if on dashboard
     if (document.getElementById('totalBalance')) {
-        UI.renderDashboardStats();
-        UI.renderRecentTransactions();
-        if (typeof UI.renderRecentNotes === 'function') {
-            UI.renderRecentNotes();
-        }
+        safeRender('renderDashboardStats');
+        safeRender('renderRecentTransactions');
+        safeRender('renderRecentNotes');
+    }
+
+    // Initialize Wallet Page
+    if (document.getElementById('walletListContainer')) {
+        safeRender('renderWallets');
+    }
+
+    // Initialize Notes Page
+    if (document.getElementById('notesListContainer')) {
+        safeRender('renderNotes');
     }
 
     // Initialize Transactions Page UI
@@ -58,66 +78,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 UI.renderAllTransactions(activeFilter);
             });
         }
-        const mpCloseBtn = document.getElementById('closeMonthPickerBtn');
-        const monthPickerModal = document.getElementById('monthPickerModal');
-        const monthPickerContent = document.getElementById('monthPickerContent');
-        const openMonthPickerBtn = document.getElementById('openMonthPickerBtn');
-        const mpCurrentYear = document.getElementById('mpCurrentYear');
-        const mpMonthsGrid = document.getElementById('mpMonthsGrid');
-        const mpPrevYear = document.getElementById('mpPrevYear');
-        const mpNextYear = document.getElementById('mpNextYear');
-        const mpClearBtn = document.getElementById('mpClearBtn');
-        const monthPickerBtnText = document.getElementById('monthPickerBtnText');
+        // Isolated Month Picker Logic
+        const mpElems = {
+            modal: document.getElementById('monthPickerModal'),
+            content: document.getElementById('monthPickerContent'),
+            openBtn: document.getElementById('openMonthPickerBtn'),
+            closeBtn: document.getElementById('closeMonthPickerBtn'),
+            currentYear: document.getElementById('mpCurrentYear'),
+            monthsGrid: document.getElementById('mpMonthsGrid'),
+            prevYear: document.getElementById('mpPrevYear'),
+            nextYear: document.getElementById('mpNextYear'),
+            clearBtn: document.getElementById('mpClearBtn'),
+            btnText: document.getElementById('monthPickerBtnText')
+        };
 
-        if (openMonthPickerBtn && monthPickerModal) {
+        if (mpElems.modal && mpElems.openBtn) {
             let activeYear = new Date().getFullYear();
             const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"];
 
-            const triggerSearch = () => {
-                const activeFilterBtn = document.querySelector('.filter-btn.bg-agri-600');
-                const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.filter : 'all';
-                UI.renderAllTransactions(activeFilter);
-                updateMonthFilterBadge();
-            };
-
-            const updateMonthFilterBadge = () => {
-                const badge = document.getElementById('monthFilterBadge');
-                const badgeText = document.getElementById('monthFilterBadgeText');
-
-                if (window.activeMonthFilter) {
-                    const [year, month] = window.activeMonthFilter.split('-');
-                    const monthNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"];
-                    const monthName = monthNames[parseInt(month) - 1];
-                    badgeText.textContent = `${monthName} ${year}`;
-                    badge.classList.remove('hidden');
-                } else {
-                    badge.classList.add('hidden');
-                }
-            };
-
             const closeMp = () => {
-                monthPickerModal.classList.add('opacity-0');
-                monthPickerContent.classList.add('scale-95');
-                
-                // Show navbar when modal closed
+                mpElems.modal.classList.add('opacity-0');
+                if (mpElems.content) mpElems.content.classList.add('scale-95');
                 const bottomNav = document.getElementById('bottomNav');
                 if (bottomNav) bottomNav.classList.remove('translate-y-full', 'opacity-0', 'pointer-events-none');
-                
-                setTimeout(() => monthPickerModal.classList.add('hidden'), 300);
+                setTimeout(() => mpElems.modal.classList.add('hidden'), 300);
             };
 
             const renderMonthsGrid = () => {
-                mpCurrentYear.textContent = activeYear;
-                mpMonthsGrid.innerHTML = '';
+                if (!mpElems.monthsGrid || !mpElems.currentYear) return;
+                mpElems.currentYear.textContent = activeYear;
+                mpElems.monthsGrid.innerHTML = '';
                 
                 const currentFilterParts = window.activeMonthFilter ? window.activeMonthFilter.split('-') : null;
                 const filterYear = currentFilterParts ? parseInt(currentFilterParts[0]) : null;
                 const filterMonth = currentFilterParts ? parseInt(currentFilterParts[1]) : null;
                 
-                let activeBtn = null;
                 monthNames.forEach((m, idx) => {
                     const btn = document.createElement('button');
-                    const monthNum = idx + 1; // 1 to 12
+                    const monthNum = idx + 1;
                     const isActive = (filterYear === activeYear && filterMonth === monthNum);
                     
                     btn.type = "button";
@@ -131,63 +129,77 @@ document.addEventListener('DOMContentLoaded', () => {
                     btn.addEventListener('click', () => {
                         window.activeMonthFilter = `${activeYear}-${monthNum.toString().padStart(2, '0')}`;
                         closeMp();
-                        triggerSearch();
+                        const activeFilterBtn = document.querySelector('.filter-btn.bg-agri-600');
+                        const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.filter : 'all';
+                        UI.renderAllTransactions(activeFilter);
+                        updateMonthFilterBadge();
                     });
-                    
-                    if (isActive) activeBtn = btn;
-                    mpMonthsGrid.appendChild(btn);
+                    mpElems.monthsGrid.appendChild(btn);
                 });
+            };
+
+            const updateMonthFilterBadge = () => {
+                const badge = document.getElementById('monthFilterBadge');
+                const badgeText = document.getElementById('monthFilterBadgeText');
+                if (!badge || !badgeText) return;
+
+                if (window.activeMonthFilter) {
+                    const [year, month] = window.activeMonthFilter.split('-');
+                    const mNames = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"];
+                    badgeText.textContent = `${mNames[parseInt(month) - 1]} ${year}`;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
             };
 
             window.openMonthPickerModal = () => {
-                monthPickerModal.classList.remove('hidden');
+                if (!mpElems.modal) return;
+                mpElems.modal.classList.remove('hidden');
                 setTimeout(() => {
-                    monthPickerModal.classList.remove('opacity-0');
-                    monthPickerContent.classList.remove('scale-95', 'translate-y-full', 'sm:translate-y-10');
+                    mpElems.modal.classList.remove('opacity-0');
+                    if (mpElems.content) mpElems.content.classList.remove('scale-95', 'translate-y-full', 'sm:translate-y-10');
                 }, 10);
-
-                // Hide navbar when modal open
                 const bottomNav = document.getElementById('bottomNav');
                 if (bottomNav) bottomNav.classList.add('translate-y-full', 'opacity-0', 'pointer-events-none');
-
-                if (window.activeMonthFilter) {
-                    activeYear = parseInt(window.activeMonthFilter.split('-')[0]);
-                } else {
-                    activeYear = new Date().getFullYear();
-                }
+                if (window.activeMonthFilter) activeYear = parseInt(window.activeMonthFilter.split('-')[0]);
+                else activeYear = new Date().getFullYear();
                 renderMonthsGrid();
             };
 
-            mpCloseBtn.addEventListener('click', closeMp);
-            monthPickerModal.addEventListener('click', (e) => {
-                if (e.target === monthPickerModal) closeMp();
-            });
-
-            mpPrevYear.addEventListener('click', () => { activeYear--; renderMonthsGrid(); });
-            mpNextYear.addEventListener('click', () => { activeYear++; renderMonthsGrid(); });
-
-            mpClearBtn.addEventListener('click', () => {
+            // Setup Event Listeners
+            if (mpElems.closeBtn) mpElems.closeBtn.addEventListener('click', closeMp);
+            mpElems.modal.addEventListener('click', (e) => { if (e.target === mpElems.modal) closeMp(); });
+            if (mpElems.prevYear) mpElems.prevYear.addEventListener('click', (e) => { e.preventDefault(); activeYear--; renderMonthsGrid(); });
+            if (mpElems.nextYear) mpElems.nextYear.addEventListener('click', (e) => { e.preventDefault(); activeYear++; renderMonthsGrid(); });
+            if (mpElems.clearBtn) mpElems.clearBtn.addEventListener('click', () => {
                 window.activeMonthFilter = '';
                 closeMp();
-                triggerSearch();
+                const activeFilterBtn = document.querySelector('.filter-btn.bg-agri-600');
+                safeRender('renderAllTransactions', activeFilterBtn ? activeFilterBtn.dataset.filter : 'all');
+                updateMonthFilterBadge();
             });
 
-            // Clear month filter from badge button
             const clearMonthFilterBtn = document.getElementById('clearMonthFilterBtn');
             if (clearMonthFilterBtn) {
                 clearMonthFilterBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                    e.preventDefault(); e.stopPropagation();
                     window.activeMonthFilter = '';
                     updateMonthFilterBadge();
                     const activeFilterBtn = document.querySelector('.filter-btn.bg-agri-600');
-                    const activeFilter = activeFilterBtn ? activeFilterBtn.dataset.filter : 'all';
-                    UI.renderAllTransactions(activeFilter);
+                    safeRender('renderAllTransactions', activeFilterBtn ? activeFilterBtn.dataset.filter : 'all');
                 });
             }
 
-            // Open month picker modal when button is clicked
-            openMonthPickerBtn.addEventListener('click', window.openMonthPickerModal);
+            // Expose updateMonthFilterBadge to higher scope if needed, or call it here
+            window._updateMonthFilterBadge = updateMonthFilterBadge; 
+            
+            updateMonthFilterBadge();
+            mpElems.openBtn.addEventListener('click', window.openMonthPickerModal);
+        } else {
+            window.openMonthPickerModal = () => { console.warn('Month picker elements not found'); };
+            window._updateMonthFilterBadge = () => {};
+        }
 
             // Export Transactions handler
             const exportBtn = document.getElementById('exportTransactionsBtn');
@@ -225,8 +237,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // Initialize badge display on page load
-            updateMonthFilterBadge();
+            // Initialize badge display on page load via the exposed function
+            if (typeof window._updateMonthFilterBadge === 'function') {
+                window._updateMonthFilterBadge();
+            }
         }
 
         const filterBtns = document.querySelectorAll('.filter-btn');
@@ -726,7 +740,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 openDeleteConfirm();
             }
         });
-    }
+
 
     // Initialize Notes Page UI
     if (document.getElementById('notesListContainer')) {
