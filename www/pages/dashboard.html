@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard Analitik - AgriTrack</title>
+    <!-- Cordova JS -->
+    <script src="../cordova.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: {
+                        agri: { 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d', 950: '#052e16' },
+                        dark: { bg: '#0f172a', card: '#1e293b', border: '#334155' }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body id="mainBody" class="bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-gray-100 font-sans antialiased min-h-screen pb-20 md:pb-24 transition-all duration-300">
+    <header class="pt-8 pb-4 px-6 bg-transparent relative z-30">
+        <div class="flex justify-between items-center mb-0 px-4 py-3 premium-glass rounded-2xl reveal">
+            <div class="flex items-center gap-3">
+                <a href="../index.html" class="w-10 h-10 rounded-xl bg-white/50 dark:bg-dark-border/50 backdrop-blur-md flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-agri-100 transition-all hover-lift">
+                    <i class="ph-duotone ph-arrow-left text-xl"></i>
+                </a>
+                <h1 class="text-xl font-extrabold tracking-tight">Analitik</h1>
+            </div>
+            <button id="themeToggle" class="w-10 h-10 rounded-xl bg-white/50 dark:bg-dark-border/50 backdrop-blur-md flex items-center justify-center text-gray-600 dark:text-gray-300 hover-lift">
+                <i class="ph-duotone ph-moon text-xl dark:hidden"></i>
+                <i class="ph-duotone ph-sun text-xl hidden dark:block"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="px-5 py-6 space-y-8" id="analyticsContainer">
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="premium-glass p-5 rounded-[2rem] reveal hover-lift" style="animation-delay: 0.1s">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl grad-income text-white flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                        <i class="ph-duotone ph-trend-up text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Pemasukan</p>
+                        <p class="text-xl font-extrabold text-emerald-600 dark:text-emerald-400" id="statIncome">Rp 0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="premium-glass p-5 rounded-[2rem] reveal hover-lift" style="animation-delay: 0.2s">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl grad-expense text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
+                        <i class="ph-duotone ph-trend-down text-2xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Pengeluaran</p>
+                        <p class="text-xl font-extrabold text-orange-600 dark:text-orange-400" id="statExpense">Rp 0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="grad-emerald p-6 rounded-[2rem] text-white shadow-xl shadow-agri-900/20 reveal hover-lift" style="animation-delay: 0.3s">
+                <p class="text-[10px] font-bold text-agri-100 uppercase tracking-widest mb-1 opacity-80">Net Profit / Saldo</p>
+                <p class="text-2xl font-extrabold" id="statNet">Rp 0</p>
+            </div>
+        </div>
+
+        <!-- Chart 1: Arus Kas -->
+        <div class="premium-glass p-6 rounded-[2.5rem] reveal" style="animation-delay: 0.4s">
+            <h3 class="text-lg font-extrabold mb-6 tracking-tight">Arus Kas (Pendapatan vs Pengeluaran)</h3>
+            <div class="h-72 w-full relative">
+                <canvas id="cashflowChart"></canvas>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Chart 2: Distribusi Kategori (Doughnut) -->
+            <div class="premium-glass p-6 rounded-[2.5rem] flex flex-col reveal shadow-emerald-500/5" style="animation-delay: 0.5s">
+                <h3 class="text-base font-extrabold mb-6 tracking-tight">Persentase Transaksi</h3>
+                <div class="flex-1 flex items-center justify-center min-h-[250px] relative">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 3: Distribusi Dompet (Doughnut) -->
+            <div class="premium-glass p-6 rounded-[2.5rem] flex flex-col reveal shadow-blue-500/5" style="animation-delay: 0.6s">
+                <h3 class="text-base font-extrabold mb-6 tracking-tight">Penggunaan Dompet</h3>
+                <div class="flex-1 flex items-center justify-center min-h-[250px] relative">
+                    <canvas id="walletChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav id="bottomNav"
+        class="fixed bottom-6 left-6 right-6 premium-glass rounded-[2rem] px-4 py-4 flex justify-around items-center z-50 transition-all duration-300 shadow-2xl">
+        <a href="../index.html"
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-house text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Beranda</span>
+        </a>
+        <a href="dashboard.html"
+            class="flex flex-col items-center gap-1 text-agri-600 dark:text-agri-400 font-bold transition-all transform scale-110">
+            <i class="ph-duotone ph-chart-pie-slice text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter font-bold">Analitik</span>
+        </a>
+        <a href="transactions.html"
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-swap text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Transaksi</span>
+        </a>
+        <a href="notes.html"
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-notebook text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Catatan</span>
+        </a>
+        <a href="wallet.html"
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-wallet text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Dompet</span>
+        </a>
+    </nav>
+
+    <!-- JS -->
+    <script src="../js/store.js"></script>
+    <script src="../js/ui.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            Chart.defaults.color = isDark ? '#94a3b8' : '#64748b'; // slate-400 : slate-500
+            Chart.defaults.font.family = '"Plus Jakarta Sans", sans-serif';
+
+            // Watch theme toggle to update chart globally
+            const toggle = document.getElementById('themeToggle');
+            if(toggle) {
+                toggle.addEventListener('click', () => {
+                    setTimeout(() => {
+                        const newDark = document.documentElement.classList.contains('dark');
+                        Chart.defaults.color = newDark ? '#94a3b8' : '#64748b';
+                        const charts = Object.values(Chart.instances);
+                        charts.forEach(chart => {
+                            if(chart.options.scales && chart.options.scales.x) {
+                                chart.options.scales.x.grid.color = newDark ? '#334155' : '#f1f5f9';
+                                chart.options.scales.y.grid.color = newDark ? '#334155' : '#f1f5f9';
+                            }
+                            chart.update();
+                        });
+                    }, 50);
+                });
+            }
+
+            const transactions = Store.getTransactions();
+            const wallets = Store.getWallets();
+
+            // Populate Stats natively
+            let inc = 0, exp = 0;
+            transactions.forEach(t => {
+                const a = parseFloat(t.amount);
+                if(t.type==='income') inc += a;
+                if(t.type==='expense') exp += a;
+            });
+            const fmt = (num) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits:0}).format(num);
+            document.getElementById('statIncome').textContent = fmt(inc);
+            document.getElementById('statExpense').textContent = fmt(exp);
+            document.getElementById('statNet').textContent = fmt(inc - exp);
+
+            // Prepare Chart Data
+            // Grid lines color based on theme
+            const gridColor = isDark ? '#334155' : '#f1f5f9';
+
+            new Chart(document.getElementById('cashflowChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Pemasukan', 'Pengeluaran'],
+                    datasets: [{
+                        label: 'Total Rupiah',
+                        data: [inc, exp],
+                        backgroundColor: (context) => {
+                            const ctx = context.chart.ctx;
+                            const red = ctx.createLinearGradient(0, 0, 0, 400);
+                            red.addColorStop(0, '#f97316');
+                            red.addColorStop(1, '#c2410c');
+                            const blue = ctx.createLinearGradient(0, 0, 0, 400);
+                            blue.addColorStop(0, '#10b981');
+                            blue.addColorStop(1, '#047857');
+                            return [blue, red];
+                        },
+                        borderRadius: 12,
+                        barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: gridColor, drawBorder: false }
+                        },
+                        x: {
+                            grid: { display: false, drawBorder: false }
+                        }
+                    }
+                }
+            });
+
+            // Category Chart (Doughnut)
+            let catData = [inc, exp];
+            if(inc === 0 && exp === 0) catData = [1, 1]; // fallback empty
+            new Chart(document.getElementById('categoryChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pemasukan', 'Pengeluaran'],
+                    datasets: [{
+                        data: catData,
+                        backgroundColor: ['#10b981', '#f97316'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            // Wallet Chart
+            // map wallets to their transaction occurrence counts
+            let wLabels = [];
+            let wData = [];
+            let wColors = [];
+            const wColorPalette = ['#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#f97316'];
+            
+            wallets.forEach((w, idx) => {
+                const count = transactions.filter(t => t.walletId === w.id || (!t.walletId && w.id === 'w-cash')).length;
+                if(count > 0 || wallets.length <= 2) {
+                    wLabels.push(w.name);
+                    wData.push(count);
+                    wColors.push(wColorPalette[idx % wColorPalette.length]);
+                }
+            });
+
+            if(wData.length === 0 || wData.every(x => x === 0)) wData = wLabels.map(()=>1); // fallback empty
+
+            new Chart(document.getElementById('walletChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: wLabels,
+                    datasets: [{
+                        data: wData,
+                        backgroundColor: wColors,
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

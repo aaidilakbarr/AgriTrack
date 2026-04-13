@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Catatan - AgriTrack</title>
+    <!-- Cordova JS -->
+    <script src="../cordova.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: {
+                        agri: { 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d', 950: '#052e16' },
+                        dark: { bg: '#0f172a', card: '#1e293b', border: '#334155' }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body id="mainBody"
+    class="bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-gray-100 font-sans antialiased min-h-screen pb-20 md:pb-24 transition-all duration-300">
+
+    <header class="pt-8 pb-4 px-6 bg-transparent relative z-30">
+        <div class="flex justify-between items-center mb-6 px-4 py-3 premium-glass rounded-2xl reveal">
+            <div class="flex items-center gap-3">
+                <a href="../index.html" class="w-10 h-10 rounded-xl bg-white/50 dark:bg-dark-border/50 backdrop-blur-md flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-agri-100 transition-all hover-lift">
+                    <i class="ph-duotone ph-arrow-left text-xl"></i>
+                </a>
+                <h1 class="text-xl font-extrabold tracking-tight">Catatan</h1>
+            </div>
+            <button id="themeToggle" class="w-10 h-10 rounded-xl bg-white/50 dark:bg-dark-border/50 backdrop-blur-md flex items-center justify-center text-gray-600 dark:text-gray-300 hover-lift">
+                <i class="ph-duotone ph-moon text-xl dark:hidden"></i>
+                <i class="ph-duotone ph-sun text-xl hidden dark:block"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="px-5 py-6 grid gap-4 grid-cols-1 md:grid-cols-2" id="notesListContainer">
+        <!-- Render from JS -->
+        <div class="flex flex-col items-center justify-center py-16 text-gray-400 col-span-full"><i
+                class="ph ph-spinner-gap animate-spin text-4xl mb-4"></i>
+            <p>Memuat Data...</p>
+        </div>
+    </main>
+
+    <!-- Add Button -->
+    <button id="addNoteBtn"
+        class="fixed bottom-28 right-6 w-16 h-16 grad-emerald text-white rounded-[2rem] shadow-2xl shadow-agri-600/40 flex items-center justify-center z-40 transition-all hover:scale-110 active:scale-95 hover:rotate-90">
+        <i class="ph ph-plus text-3xl font-bold"></i>
+    </button>
+
+    <!-- Bottom Navigation Bar -->
+    <nav id="bottomNav"
+        class="fixed bottom-6 left-6 right-6 premium-glass rounded-[2rem] px-4 py-4 flex justify-around items-center z-50 transition-all duration-300 shadow-2xl">
+        <a href="../index.html"
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-house text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Beranda</span>
+        </a>
+        <a href="dashboard.html"
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-chart-pie-slice text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Analitik</span>
+        </a>
+        <a href="transactions.html"
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-swap text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Transaksi</span>
+        </a>
+        <a href="notes.html"
+            class="flex flex-col items-center gap-1 text-agri-600 dark:text-agri-400 font-bold transition-all transform scale-110">
+            <i class="ph-duotone ph-notebook text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter font-bold">Catatan</span>
+        </a>
+        <a href="wallet.html"
+            class="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500 hover:text-agri-600 dark:hover:text-agri-400 font-medium transition-all hover:scale-105">
+            <i class="ph-duotone ph-wallet text-2xl"></i>
+            <span class="text-[9px] uppercase tracking-tighter">Dompet</span>
+        </a>
+    </nav>
+
+    <!-- Note Modal -->
+    <div id="noteModal"
+        class="fixed inset-0 bg-gray-900/40 dark:bg-gray-950/70 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-end sm:items-center justify-center">
+        <div class="bg-white dark:bg-dark-card w-full sm:w-[500px] sm:rounded-3xl rounded-t-3xl p-6 transform translate-y-full sm:translate-y-10 transition-transform duration-300"
+            id="noteModalContent">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold" id="noteModalTitle">Tambah Catatan</h3>
+                <button id="closeNoteModalBtn"
+                    class="w-8 h-8 rounded-full bg-gray-100 dark:bg-dark-border flex items-center justify-center text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+
+            <form id="noteForm" class="space-y-4">
+                <input type="hidden" id="noteId">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Judul Catatan</label>
+                    <input type="text" id="noteTitle" required placeholder="Contoh: Jadwal Semprot Hama"
+                        class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-agri-500 outline-none transition-shadow font-bold">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tanggal</label>
+                    <input type="date" id="noteDate" required
+                        class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-agri-500 outline-none transition-shadow dark:[color-scheme:dark]">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Isi Detail
+                        Catatan</label>
+                    <textarea id="noteContent" required rows="5" placeholder="Tuliskan detail catatan di sini..."
+                        class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border focus:ring-2 focus:ring-agri-500 outline-none transition-shadow resize-none"></textarea>
+                </div>
+
+                <div class="pt-4 pb-2 flex gap-3">
+                    <button type="button" id="deleteNoteBtn"
+                        class="hidden px-4 py-3 rounded-xl bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 font-bold hover:bg-red-200 transition-colors">
+                        <i class="ph ph-trash text-xl"></i>
+                    </button>
+                    <button type="submit"
+                        class="flex-1 py-3 rounded-xl bg-agri-600 text-white font-bold hover:bg-agri-700 outline-none focus:ring-4 focus:ring-agri-500/50 transition-all shadow-md shadow-agri-600/30">Simpan
+                        Catatan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/store.js"></script>
+    <script src="../js/ui.js"></script>
+    <script src="../js/app.js"></script>
+</body>
+
+</html>
